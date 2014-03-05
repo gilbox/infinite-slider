@@ -1,0 +1,15 @@
+{
+  "name": "gilbox-kinetic-slider",
+  "version": "0.0.1",
+  "main": "./dist/gilbox-kinetic-slider.js",
+  "description": "Kinetic Slider for AngularJS",
+  "dependencies": {
+    "angular": "*",
+    "angular-mousewheel": "~1.0.4"
+  },
+  "ignore": [
+    "node_modules",
+    "components",
+    "lib"
+  ]
+}

@@ -1,0 +1,29 @@
+html, body {
+  padding: 0;
+  margin: 0; }
+
+header {
+  padding: 0 0 0 20px; }
+
+.kinetic-slider-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  z-index: 1;
+  overflow: hidden; }
+
+.kinetic-slider-content {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 400px; }
+  .kinetic-slider-content a {
+    position: relative;
+    display: block;
+    float: left;
+    width: 390px;
+    height: 390px;
+    padding: 5px;
+    overflow: hidden; }
+    .kinetic-slider-content a img {
+      height: 100%; }
