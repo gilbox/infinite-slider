@@ -16,13 +16,13 @@ kinetic-slider depends on Angular, angular-mousewheel, and hamsterjs.
 
 ## Getting Started
 
+Add kinetic-slider as a dependency to your app:
+
 ````javascript
-// Add kinetic-slider as a dependency to your app
 angular.module('myApp', ['gilbox.kineticSlider']);
-});
 ````
 
-In your HTML you must calculate the content-width yourself:
+Note that in your HTML you must calculate the content-width yourself:
 
 ````html
   <div kinetic-slider class="kinetic-slider-container" content-width="3000">
@@ -32,6 +32,24 @@ In your HTML you must calculate the content-width yourself:
 
     </div>
   </div>
+````
+
+Some minimal styling is required:
+
+````css
+.kinetic-slider-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.kinetic-slider-content {
+  position: absolute;
+  z-index: 1;         // note: make sure you set a z-index
+  width: 100%;
+  height: 400px;
 ````
 
 # License
