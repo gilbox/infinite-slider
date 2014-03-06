@@ -39,9 +39,9 @@ Some minimal styling is required:
 ````css
 .kinetic-slider-container {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 400px;
-  z-index: 1;
   overflow: hidden;
 }
 
@@ -50,6 +50,7 @@ Some minimal styling is required:
   z-index: 1;         // note: make sure you set a z-index
   width: 100%;
   height: 400px;
+}
 ````
 
 # License
