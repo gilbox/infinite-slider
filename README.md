@@ -63,6 +63,9 @@ Some minimal styling is required:
 }
 ````
 
+# Demo
+
+Check out [the demo](http://gilbox.github.io/kinetic-slider/)
 
 # License
 
