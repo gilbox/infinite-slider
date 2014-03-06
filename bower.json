@@ -1,6 +1,6 @@
 {
-  "name": "gilbox-kinetic-slider",
-  "version": "0.0.1",
+  "name": "kinetic-slider",
+  "version": "1.0.0",
   "main": "./dist/gilbox-kinetic-slider.js",
   "description": "Kinetic Slider for AngularJS",
   "repository": {
