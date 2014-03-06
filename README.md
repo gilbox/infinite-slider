@@ -11,7 +11,7 @@ You can download this by:
 
 #Dependencies
 
-kinetic-slider depends on Angular, angular-mousewheel, and hamsterjs.
+kinetic-slider depends on Angular, [angular-mousewheel](https://github.com/monospaced/angular-mousewheel), and [hamsterjs](https://github.com/monospaced/hamster.js).
 
 
 ## Getting Started
