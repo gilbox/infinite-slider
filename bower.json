@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "main": "./dist/gilbox-kinetic-slider.js",
   "description": "Kinetic Slider for AngularJS",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gilbox/kinetic-slider.git"
+  },
   "dependencies": {
     "angular": "*",
     "angular-mousewheel": "~1.0.4"

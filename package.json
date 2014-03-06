@@ -1,6 +1,10 @@
 {
   "name": "gilbox-kinetic-slider",
   "description": "Kinetic Slider from gilbox.me",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gilbox/kinetic-slider.git"
+  },
   "devDependencies": {
     "gulp": "~3.5.5",
     "gulp-util": "~2.2.14",
