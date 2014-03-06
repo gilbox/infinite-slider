@@ -1,6 +1,7 @@
 kinetic-slider
 ==============
 
+If you'd like to contribute to this project, PRs are appreciated.
 
 #How do I add this to my project?
 
