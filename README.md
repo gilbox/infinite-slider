@@ -9,12 +9,21 @@ You can download this by:
 * Using bower and running `bower install kinetic-slider`
 * Downloading [the zip file](https://github.com/gilbox/kinetic-slider/archive/master.zip)
 
+
 #Dependencies
 
 kinetic-slider depends on Angular, [angular-mousewheel](https://github.com/monospaced/angular-mousewheel), and [hamsterjs](https://github.com/monospaced/hamster.js).
 
 
 ## Getting Started
+
+You need the following script tags:
+
+````html
+<script src="vendor/hamster.js"></script>
+<script src="vendor/mousewheel.js"></script>
+<script src="gilbox-kinetic-slider.js"></script>
+````
 
 Add kinetic-slider as a dependency to your app:
 
@@ -52,6 +61,7 @@ Some minimal styling is required:
   height: 400px;
 }
 ````
+
 
 # License
 
