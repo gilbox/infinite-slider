@@ -78,14 +78,12 @@
       $document.bind endTypes, (event) -> # drag end
 
         unless (allowClick)
-          xDelta = prevInteraction.x - interactionCurrent.x
+          event.preventDefault()
           if (interactionStart == null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge))
             allowClick = true # click now
           else
-            v = xDelta  # momentum-generated velocity
+            v = prevInteraction.x - interactionCurrent.x  # momentum-generated velocity
             setTimeout (-> allowClick = true), 100  # don't allow click todo: seems hacky, a better way to do this?
-
-        event.preventDefault() unless allowClick
 
         interactionStart = null
         for type in moveTypesArray

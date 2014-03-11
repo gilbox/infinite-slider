@@ -91,20 +91,17 @@
             }
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
-              var type, xDelta, _i, _len, _results;
+              var type, _i, _len, _results;
               if (!allowClick) {
-                xDelta = prevInteraction.x - interactionCurrent.x;
+                event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
                 } else {
-                  v = xDelta;
+                  v = prevInteraction.x - interactionCurrent.x;
                   setTimeout((function() {
                     return allowClick = true;
                   }), 100);
                 }
-              }
-              if (!allowClick) {
-                event.preventDefault();
               }
               interactionStart = null;
               _results = [];

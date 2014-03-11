@@ -63,7 +63,7 @@
           scope: {},
           replace: true,
           transclude: true,
-          template: '<div ng-transclude msd-wheel="wheel($event)"></div>',
+          template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
           link: function(scope, element, attrs) {
             var a, allowClick, calcxMin, clickFudge, contElm, doTransform, endTypes, f, has3d, interactionCurrent, interactionStart, maxv, moveTypes, moveTypesArray, naxv, onWinResize, prevInteraction, run, spring, startTypes, v, winElm, xMin, xOff;
             a = attrs.acceleration || 1.05;
@@ -90,20 +90,17 @@
             }
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
-              var type, xDelta, _i, _len, _results;
+              var type, _i, _len, _results;
               if (!allowClick) {
-                xDelta = prevInteraction.x - interactionCurrent.x;
+                event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
                 } else {
-                  v = xDelta;
+                  v = prevInteraction.x - interactionCurrent.x;
                   setTimeout((function() {
                     return allowClick = true;
                   }), 100);
                 }
-              }
-              if (!allowClick) {
-                event.preventDefault();
               }
               interactionStart = null;
               _results = [];
@@ -140,6 +137,7 @@
               });
             });
             contElm.bind('click', function(event) {
+              console.log("click-->allowClick", allowClick);
               if (!allowClick) {
                 event.preventDefault();
               }
@@ -197,9 +195,7 @@
                 return xOff = xMin;
               }
             };
-            scope.wheel = function(event) {
-              var deltaX;
-              deltaX = -event.wheelDeltaX;
+            scope.wheel = function(event, delta, deltaX, deltaY) {
               if (deltaX) {
                 event.preventDefault();
                 if (deltaX > 0) {
