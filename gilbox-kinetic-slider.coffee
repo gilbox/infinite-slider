@@ -81,6 +81,10 @@
           event.preventDefault()
           if (interactionStart == null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge))
             allowClick = true # click now
+            el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
+            ev = document.createEvent("MouseEvent")
+            ev.initMouseEvent "click", true, true, window, null, interactionCurrent.x, interactionCurrent.y, 0, 0, false, false, false, false, 0 , null
+            el.dispatchEvent ev
           else
             v = prevInteraction.x - interactionCurrent.x  # momentum-generated velocity
             setTimeout (-> allowClick = true), 100  # don't allow click todo: seems hacky, a better way to do this?
@@ -90,7 +94,7 @@
           $document.unbind type
 
       contElm.bind startTypes, (event) ->  # drag click
-        #      event.preventDefault()   # commented out because it prevents clicking on mobile
+        event.preventDefault()   # was commented out because it prevents clicking on mobile, but added click simulation above
         allowClick = false
         v = 0
         elementStartX = xOff

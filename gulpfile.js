@@ -14,3 +14,7 @@ gulp.task('default', function() {
 	gulp.src('./bower_components/hamsterjs/hamster.js')
 		.pipe(gulp.dest('./demo/vendor/'))
 });
+
+gulp.task('watch', function() {
+  gulp.watch(['./*.coffee'], ['default']);
+});

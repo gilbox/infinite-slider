@@ -92,10 +92,12 @@
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
               var type, _i, _len, _results;
+              console.log("end");
               if (!allowClick) {
                 event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
+                  console.log(event);
                 } else {
                   v = prevInteraction.x - interactionCurrent.x;
                   setTimeout((function() {
@@ -113,6 +115,7 @@
             });
             contElm.bind(startTypes, function(event) {
               var elementStartX;
+              console.log("start");
               allowClick = false;
               v = 0;
               elementStartX = xOff;
@@ -138,6 +141,7 @@
               });
             });
             contElm.bind('click', function(event) {
+              console.log("click");
               if (!allowClick) {
                 event.preventDefault();
               }

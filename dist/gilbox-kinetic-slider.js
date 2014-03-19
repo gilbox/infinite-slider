@@ -90,11 +90,15 @@
             }
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
-              var type, _i, _len, _results;
+              var el, ev, type, _i, _len, _results;
               if (!allowClick) {
                 event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
+                  el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
+                  ev = document.createEvent("MouseEvent");
+                  ev.initMouseEvent("click", true, true, window, null, interactionCurrent.x, interactionCurrent.y, 0, 0, false, false, false, false, 0, null);
+                  el.dispatchEvent(ev);
                 } else {
                   v = prevInteraction.x - interactionCurrent.x;
                   setTimeout((function() {
@@ -112,6 +116,7 @@
             });
             contElm.bind(startTypes, function(event) {
               var elementStartX;
+              event.preventDefault();
               allowClick = false;
               v = 0;
               elementStartX = xOff;
@@ -137,7 +142,6 @@
               });
             });
             contElm.bind('click', function(event) {
-              console.log("click-->allowClick", allowClick);
               if (!allowClick) {
                 event.preventDefault();
               }
