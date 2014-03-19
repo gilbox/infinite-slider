@@ -7,6 +7,7 @@ gulp.task('default', function() {
 		.pipe(coffee().on('error', gutil.log))
 		.pipe(gulp.dest('./demo/'))
 		.pipe(gulp.dest('./dist/'))
+		.pipe(gulp.dest('./'))
 
 	gulp.src('./bower_components/angular-mousewheel/mousewheel.js')
 		.pipe(gulp.dest('./demo/vendor/'))
