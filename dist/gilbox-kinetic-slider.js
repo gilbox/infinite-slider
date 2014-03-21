@@ -96,9 +96,11 @@
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
                   el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
-                  ev = document.createEvent("MouseEvent");
-                  ev.initMouseEvent("click", true, true, window, null, interactionCurrent.x, interactionCurrent.y, 0, 0, false, false, false, false, 0, null);
-                  el.dispatchEvent(ev);
+                  if (el != null) {
+                    ev = document.createEvent("MouseEvent");
+                    ev.initMouseEvent("click", true, true, window, null, interactionCurrent.x, interactionCurrent.y, 0, 0, false, false, false, false, 0, null);
+                    el.dispatchEvent(ev);
+                  }
                 } else {
                   v = prevInteraction.x - interactionCurrent.x;
                   setTimeout((function() {
@@ -194,21 +196,21 @@
               return xMin = $window.innerWidth - contentWidth;
             };
             calcContentWidth = function() {
-              var chs;
+              var c, chs, _i, _len;
               if (scope.contentWidth) {
                 contentWidth = scope.contentWidth;
               } else {
                 chs = element.children().eq(0).children();
-                contentWidth = chs.length * chs[0].clientWidth;
-                console.log("-->chs", chs);
-                console.log("-->contentWidth", contentWidth);
+                contentWidth = 0;
+                for (_i = 0, _len = chs.length; _i < _len; _i++) {
+                  c = chs[_i];
+                  contentWidth += c.clientWidth;
+                }
               }
               return contElm.css('width', contentWidth + 'px');
             };
-            if (scope.contentWidth != null) {
-              calcContentWidth();
-            } else {
-              calcContentWidth();
+            calcContentWidth();
+            if (scope.contentWidth == null) {
               scope.$watch('contentWidth', calcContentWidth);
             }
             onWinResize = function() {
