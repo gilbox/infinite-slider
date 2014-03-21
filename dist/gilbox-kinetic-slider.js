@@ -210,7 +210,7 @@
               return contElm.css('width', contentWidth + 'px');
             };
             calcContentWidth();
-            if (scope.contentWidth == null) {
+            if (attrs.hasOwnProperty('contentWidth')) {
               scope.$watch('contentWidth', calcContentWidth);
             }
             onWinResize = function() {
