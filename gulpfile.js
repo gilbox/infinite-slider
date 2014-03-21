@@ -8,14 +8,18 @@ gulp.task('default', function() {
 		.pipe(gulp.dest('./demo/'))
 		.pipe(gulp.dest('./dist/'))
 		.pipe(gulp.dest('./'))
+});
 
-	gulp.src('./bower_components/angular-mousewheel/mousewheel.js')
-		.pipe(gulp.dest('./demo/vendor/'))
+gulp.task('vendor', function () {
+  gulp.src('./bower_components/angular-mousewheel/mousewheel.js')
+    .pipe(gulp.dest('./demo/vendor/'))
 
-	gulp.src('./bower_components/hamsterjs/hamster.js')
-		.pipe(gulp.dest('./demo/vendor/'))
+  gulp.src('./bower_components/hamsterjs/hamster.js')
+    .pipe(gulp.dest('./demo/vendor/'))
 });
 
 gulp.task('watch', function() {
   gulp.watch(['./*.coffee'], ['default']);
 });
+
+gulp.task('default', ['coffee', 'vendor'])
