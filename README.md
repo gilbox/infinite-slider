@@ -32,10 +32,11 @@ Add kinetic-slider as a dependency to your app:
 angular.module('myApp', ['gilbox.kineticSlider']);
 ````
 
-Note that in your HTML you must calculate the content-width yourself:
+Note that in your HTML you may optionally provide the content-width,
+otherwise it will be calculated automatically as shown here:
 
 ````html
-  <div kinetic-slider class="kinetic-slider-container" content-width="3000">
+  <div kinetic-slider class="kinetic-slider-container">
     <div class="kinetic-slider-content">
 
       <!-- content goes here -->
