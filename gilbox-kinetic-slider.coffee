@@ -182,7 +182,7 @@
         contElm.css 'width', contentWidth + 'px'
 
       calcContentWidth()
-      scope.$watch('contentWidth', calcContentWidth) if scope.contentWidth?
+      scope.$watch('contentWidth', calcContentWidth) if scope.contentWidth? || scope.contentWidth == 0
 
       onWinResize = ->
         calcContentWidth()
