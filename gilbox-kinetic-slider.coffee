@@ -44,7 +44,9 @@
 
   gilbox.directive 'kineticSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
     restrict: 'A'
-    scope: {}
+    scope: {
+      contentWidth: '=?'
+    }
     replace: true
     transclude: true
     template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
@@ -71,7 +73,7 @@
       interactionCurrent = null
       prevInteraction = null
 
-      contElm.css 'width', attrs.contentWidth + 'px'  if attrs.contentWidth
+      contentWidth = scope.contentWidth
 
       has3d = browserHelper.has3d()
 
@@ -92,6 +94,7 @@
         interactionStart = null
         for type in moveTypesArray
           $document.unbind type
+
 
       contElm.bind startTypes, (event) ->  # drag click
         event.preventDefault()   # was commented out because it prevents clicking on mobile, but added click simulation above
@@ -116,9 +119,11 @@
           xOff = elementStartX + (interactionCurrent.x - interactionStart.x)
           doTransform()
 
+
       contElm.bind 'click', (event) ->
         event.preventDefault() if (!allowClick)
         allowClick
+
 
       run = ->
         setInterval (->
@@ -137,6 +142,7 @@
                 xOff += (xMin-xOff)*spring
                 doTransform()
         ), 20
+
 
       doTransform = ->
         x = xOff
@@ -157,10 +163,32 @@
         else
           contElm.css('left', xOff);
 
+
       calcxMin = ->
-        xMin = $window.innerWidth - attrs.contentWidth
+        xMin = $window.innerWidth - contentWidth
+
+
+      calcContentWidth = ->
+        if scope.contentWidth
+          # explicit contentWidth was set
+          contentWidth = scope.contentWidth
+        else
+          # calculate contentWidth by checking width of the first child
+          chs = element.children().eq(0).children()
+          contentWidth = chs.length * chs[0].clientWidth
+          console.log "-->chs", chs
+          console.log "-->contentWidth", contentWidth
+
+        contElm.css 'width', contentWidth + 'px'
+
+      if scope.contentWidth?
+        calcContentWidth()
+      else
+        calcContentWidth()
+        scope.$watch 'contentWidth', calcContentWidth
 
       onWinResize = ->
+        calcContentWidth()
         calcxMin()
         xOff = xMin  if xOff < xMin
 

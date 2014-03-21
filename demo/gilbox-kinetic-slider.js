@@ -60,12 +60,14 @@
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
           restrict: 'A',
-          scope: {},
+          scope: {
+            contentWidth: '=?'
+          },
           replace: true,
           transclude: true,
           template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
           link: function(scope, element, attrs) {
-            var a, allowClick, calcxMin, clickFudge, contElm, doTransform, endTypes, f, has3d, interactionCurrent, interactionStart, maxv, moveTypes, moveTypesArray, naxv, onWinResize, prevInteraction, run, spring, startTypes, v, winElm, xMin, xOff;
+            var a, allowClick, calcContentWidth, calcxMin, clickFudge, contElm, contentWidth, doTransform, endTypes, f, has3d, interactionCurrent, interactionStart, maxv, moveTypes, moveTypesArray, naxv, onWinResize, prevInteraction, run, spring, startTypes, v, winElm, xMin, xOff;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -85,9 +87,7 @@
             interactionStart = null;
             interactionCurrent = null;
             prevInteraction = null;
-            if (attrs.contentWidth) {
-              contElm.css('width', attrs.contentWidth + 'px');
-            }
+            contentWidth = scope.contentWidth;
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
               var el, ev, type, _i, _len, _results;
@@ -191,9 +191,28 @@
               }
             };
             calcxMin = function() {
-              return xMin = $window.innerWidth - attrs.contentWidth;
+              return xMin = $window.innerWidth - contentWidth;
             };
+            calcContentWidth = function() {
+              var chs;
+              if (scope.contentWidth) {
+                contentWidth = scope.contentWidth;
+              } else {
+                chs = element.children().eq(0).children();
+                contentWidth = chs.length * chs[0].clientWidth;
+                console.log("-->chs", chs);
+                console.log("-->contentWidth", contentWidth);
+              }
+              return contElm.css('width', contentWidth + 'px');
+            };
+            if (scope.contentWidth != null) {
+              calcContentWidth();
+            } else {
+              calcContentWidth();
+              scope.$watch('contentWidth', calcContentWidth);
+            }
             onWinResize = function() {
+              calcContentWidth();
               calcxMin();
               if (xOff < xMin) {
                 return xOff = xMin;
