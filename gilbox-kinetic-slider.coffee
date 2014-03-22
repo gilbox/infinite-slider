@@ -79,14 +79,23 @@
 
       $document.bind endTypes, (event) -> # drag end
         unless (allowClick)
+          console.log "-->event", event
           event.preventDefault()
           if (interactionStart == null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge))
             allowClick = true # click now
             el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
             if el?
-              ev = document.createEvent("MouseEvent")
-              ev.initMouseEvent event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
+#              if ev instanceof MouseEvent
+              ev = document.createEvent('MouseEvent')
+              ev.initMouseEvent 'click', true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
               el.dispatchEvent ev
+
+              # This fails on chrome with touch emulation:
+#              else  # TouchEvent
+#                ev = document.createEvent('TouchEvent')
+#                ev.initTouchEvent event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.touches, event.targetTouches, event.changedTouches, event.scale, event.rotation
+#                el.dispatchEvent ev
+
           else
             v = prevInteraction.x - interactionCurrent.x  # momentum-generated velocity
             setTimeout (-> allowClick = true), 100  # don't allow click todo: seems hacky, a better way to do this?

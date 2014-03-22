@@ -92,13 +92,14 @@
             $document.bind(endTypes, function(event) {
               var el, ev, type, _i, _len, _results;
               if (!allowClick) {
+                console.log("-->event", event);
                 event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
                   el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
                   if (el != null) {
-                    ev = document.createEvent("MouseEvent");
-                    ev.initMouseEvent(event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null);
+                    ev = document.createEvent('MouseEvent');
+                    ev.initMouseEvent('click', true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null);
                     el.dispatchEvent(ev);
                   }
                 } else {
