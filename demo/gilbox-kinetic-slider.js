@@ -98,7 +98,7 @@
                   el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
                   if (el != null) {
                     ev = document.createEvent("MouseEvent");
-                    ev.initMouseEvent("click", true, true, window, null, interactionCurrent.x, interactionCurrent.y, 0, 0, false, false, false, false, 0, null);
+                    ev.initMouseEvent(event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null);
                     el.dispatchEvent(ev);
                   }
                 } else {

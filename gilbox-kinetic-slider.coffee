@@ -78,7 +78,6 @@
       has3d = browserHelper.has3d()
 
       $document.bind endTypes, (event) -> # drag end
-
         unless (allowClick)
           event.preventDefault()
           if (interactionStart == null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge))
@@ -86,7 +85,7 @@
             el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
             if el?
               ev = document.createEvent("MouseEvent")
-              ev.initMouseEvent "click", true, true, window, null, interactionCurrent.x, interactionCurrent.y, 0, 0, false, false, false, false, 0 , null
+              ev.initMouseEvent event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
               el.dispatchEvent ev
           else
             v = prevInteraction.x - interactionCurrent.x  # momentum-generated velocity
@@ -97,7 +96,7 @@
           $document.unbind type
 
 
-      contElm.bind startTypes, (event) ->  # drag click
+      contElm.bind startTypes, (event) ->  # drag start
         event.preventDefault()   # was commented out because it prevents clicking on mobile, but added click simulation above
         allowClick = false
         v = 0
