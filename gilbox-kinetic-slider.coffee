@@ -44,9 +44,8 @@
 
   gilbox.directive 'kineticSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
     restrict: 'A'
-    scope: {
+    scope:
       contentWidth: '=?'
-    }
     replace: true
     transclude: true
     template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
