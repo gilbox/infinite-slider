@@ -1,8 +1,6 @@
 (function() {
   (function() {
-    var gilbox;
-    gilbox = angular.module('gilbox.kineticSlider', ['monospaced.mousewheel']);
-    gilbox.factory('browserHelper', [
+    angular.module('gilbox.kineticSlider.helpers', []).factory('browserHelper', [
       '$window', function($window) {
         var _has3d;
         _has3d = void 0;
@@ -56,7 +54,7 @@
         };
       }
     ]);
-    return gilbox.directive('kineticSlider', [
+    return angular.module('gilbox.kineticSlider', ['monospaced.mousewheel', 'gilbox.kineticSlider.helpers']).directive('kineticSlider', [
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
           restrict: 'A',
@@ -92,7 +90,6 @@
             $document.bind(endTypes, function(event) {
               var el, ev, type, _i, _len, _results;
               if (!allowClick) {
-                console.log("-->event", event);
                 event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;

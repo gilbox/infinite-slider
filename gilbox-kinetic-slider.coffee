@@ -10,9 +10,8 @@
 ##  max-velocity  || 70         # maximum scrollwheel velocity
 ##
 (->
-  gilbox = angular.module('gilbox.kineticSlider', ['monospaced.mousewheel'])
 
-  gilbox.factory 'browserHelper', ['$window', ($window) ->
+  angular.module('gilbox.kineticSlider.helpers', []).factory 'browserHelper', ['$window', ($window) ->
     _has3d = undefined
 
     has3d: ->   # perform check the first time the function is invoked
@@ -41,8 +40,7 @@
 
   ] # /browserHelper
 
-
-  gilbox.directive 'kineticSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
+  angular.module('gilbox.kineticSlider', ['monospaced.mousewheel', 'gilbox.kineticSlider.helpers']).directive 'kineticSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
     restrict: 'A'
     scope:
       contentWidth: '=?'
@@ -78,7 +76,6 @@
 
       $document.bind endTypes, (event) -> # drag end
         unless (allowClick)
-          console.log "-->event", event
           event.preventDefault()
           if (interactionStart == null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge))
             allowClick = true # click now
