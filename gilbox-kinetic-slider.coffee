@@ -34,9 +34,14 @@
         has3d isnt `undefined` and has3d.length > 0 and has3d isnt "none")()
 
     getTouchPoint: (event) ->
-      return {x: event.touches[0].pageX, y: event.touches[0].pageY} if event.touches?
-      return {x: event.originalEvent.touches[0].pageX, y: event.originalEvent.touches[0].pageY} if event.originalEvent? && event.originalEvent.touches? && event.originalEvent.touches.length
-      return {x: event.pageX, y: event.pageY} if event.pageX?
+      #console.log "-->event", event
+      if event.touches?
+        e = event.touches[0]
+      else if event.originalEvent? && event.originalEvent.touches? && event.originalEvent.touches.length
+        e = event.originalEvent.touches[0]
+      else
+        e = event
+      angular.extend {x: e.pageX, y: e.pageY}, e
 
   ] # /browserHelper
 
@@ -81,12 +86,16 @@
             allowClick = true # click now
             el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
             if el?
-#              if ev instanceof MouseEvent
-              ev = document.createEvent('MouseEvent')
-              ev.initMouseEvent 'click', true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
-              el.dispatchEvent ev
+              document.elementFromPoint(interactionCurrent.clientX, interactionCurrent.clientY).click();
+
+              # this fails on scroll
+#              ev = document.createEvent('MouseEvent')
+#              ev.initMouseEvent 'click', true, true, window, event.detail, interactionCurrent.screenX, interactionCurrent.screenY, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
+#              el.dispatchEvent ev
 
               # This fails on chrome with touch emulation:
+#              if ev instanceof MouseEvent
+#                  ...
 #              else  # TouchEvent
 #                ev = document.createEvent('TouchEvent')
 #                ev.initTouchEvent event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.touches, event.targetTouches, event.changedTouches, event.scale, event.rotation

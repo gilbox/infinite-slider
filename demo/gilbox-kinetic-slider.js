@@ -32,24 +32,18 @@
             })();
           },
           getTouchPoint: function(event) {
+            var e;
             if (event.touches != null) {
-              return {
-                x: event.touches[0].pageX,
-                y: event.touches[0].pageY
-              };
+              e = event.touches[0];
+            } else if ((event.originalEvent != null) && (event.originalEvent.touches != null) && event.originalEvent.touches.length) {
+              e = event.originalEvent.touches[0];
+            } else {
+              e = event;
             }
-            if ((event.originalEvent != null) && (event.originalEvent.touches != null) && event.originalEvent.touches.length) {
-              return {
-                x: event.originalEvent.touches[0].pageX,
-                y: event.originalEvent.touches[0].pageY
-              };
-            }
-            if (event.pageX != null) {
-              return {
-                x: event.pageX,
-                y: event.pageY
-              };
-            }
+            return angular.extend({
+              x: e.pageX,
+              y: e.pageY
+            }, e);
           }
         };
       }
@@ -88,16 +82,14 @@
             contentWidth = scope.contentWidth;
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
-              var el, ev, type, _i, _len, _results;
+              var el, type, _i, _len, _results;
               if (!allowClick) {
                 event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
                   el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
                   if (el != null) {
-                    ev = document.createEvent('MouseEvent');
-                    ev.initMouseEvent('click', true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null);
-                    el.dispatchEvent(ev);
+                    document.elementFromPoint(interactionCurrent.clientX, interactionCurrent.clientY).click();
                   }
                 } else {
                   v = prevInteraction.x - interactionCurrent.x;
