@@ -88,7 +88,7 @@
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
                   allowClick = true;
                   el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
-                  if ((el != null) && interactionCurrent.button === 0) {
+                  if ((el != null) && !interactionCurrent.button) {
                     document.elementFromPoint(interactionCurrent.clientX, interactionCurrent.clientY).click();
                   }
                 } else {
