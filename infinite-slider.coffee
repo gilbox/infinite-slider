@@ -46,8 +46,7 @@
 
   angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
     restrict: 'A'
-    scope:
-      contentWidth: '=?'
+    scope: {}
     replace: true
     transclude: true
     template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
@@ -65,8 +64,8 @@
 #      xMin = 0
       naxv = -maxv
       winElm = angular.element($window)
-      contElm = angular.element(element.children()[0])
-      items = angular.element(contElm.children())
+      contElm = element.children().eq(0)
+      items = contElm.children()
       console.log "-->items", items
       window.itms = items
       endTypes = 'touchend touchcancel mouseup mouseleave'
@@ -81,8 +80,7 @@
       xMax = 0
       firstItem = null
       lastItem = null
-
-      contentWidth = scope.contentWidth
+      itemWidth = 0
 
       has3d = browserHelper.has3d()
 
@@ -134,23 +132,26 @@
 
       run = ->
         setInterval (->
+          changed = false
+
           if v
             v *= f
             xCont -= v
             v = 0 if Math.abs(v) < 0.001
+            changed = true
+
+          if allowClick && Math.abs(v) < 2
+            snapTargetX = itemWidth * Math.round(xCont / itemWidth)
+            if xCont != snapTargetX
+              xCont += (snapTargetX-xCont)*spring
+              changed = true
+
+          if changed
             doTransform()
             rearrange()
 
-#          absv = Math.abs v
-#          if allowClick && absv > 0 && absv < 3
-#            if xOff > 0
-#              xOff -= xOff*spring
-#              doTransform()
-#            else
-#              if xOff < xMin
-#                xOff += (xMin-xOff)*spring
-#                doTransform()
         ), 20
+
 
 
       # endless loop rearrange
@@ -213,6 +214,7 @@
         lastidx = items.length-1
         firstItem = items[0]
         lastItem = items[lastidx]
+        itemWidth = firstItem.clientWidth
         for item,i in items
           if item is lastItem then item.nextItem = firstItem else item.nextItem = items[i+1]
           if item is firstItem then item.prevItem = lastItem else item.prevItem = items[i-1]
@@ -221,11 +223,8 @@
           positionItem(item)
           contentWidth += item.clientWidth
 
-        xMax = contentWidth/2
-        xMin = -xMax
-        console.log "-->contentWidth", contentWidth
-        console.log "-->xMin, xMax", xMin, xMax
-        contElm.css 'width', contentWidth + 'px'
+        xMax = contentWidth/2 + element.clientWidth/2
+        xMin = element.clientWidth/2 - contentWidth/2
 
 
       onWinResize = ->

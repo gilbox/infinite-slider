@@ -55,14 +55,12 @@
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
           restrict: 'A',
-          scope: {
-            contentWidth: '=?'
-          },
+          scope: {},
           replace: true,
           transclude: true,
           template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
           link: function(scope, element, attrs) {
-            var a, allowClick, calcContentWidth, clickFudge, contElm, contentWidth, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, calcContentWidth, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -73,8 +71,8 @@
             xCont = 0;
             naxv = -maxv;
             winElm = angular.element($window);
-            contElm = angular.element(element.children()[0]);
-            items = angular.element(contElm.children());
+            contElm = element.children().eq(0);
+            items = contElm.children();
             console.log("-->items", items);
             window.itms = items;
             endTypes = 'touchend touchcancel mouseup mouseleave';
@@ -89,7 +87,7 @@
             xMax = 0;
             firstItem = null;
             lastItem = null;
-            contentWidth = scope.contentWidth;
+            itemWidth = 0;
             has3d = browserHelper.has3d();
             $document.bind(endTypes, function(event) {
               var el, type, _i, _len, _results;
@@ -151,12 +149,24 @@
             });
             run = function() {
               return setInterval((function() {
+                var changed, snapTargetX;
+                changed = false;
                 if (v) {
                   v *= f;
                   xCont -= v;
                   if (Math.abs(v) < 0.001) {
                     v = 0;
                   }
+                  changed = true;
+                }
+                if (allowClick && Math.abs(v) < 2) {
+                  snapTargetX = itemWidth * Math.round(xCont / itemWidth);
+                  if (xCont !== snapTargetX) {
+                    xCont += (snapTargetX - xCont) * spring;
+                    changed = true;
+                  }
+                }
+                if (changed) {
                   doTransform();
                   return rearrange();
                 }
@@ -193,11 +203,12 @@
               }
             };
             calcContentWidth = function() {
-              var i, item, lastidx, _i, _len;
+              var contentWidth, i, item, lastidx, _i, _len;
               contentWidth = 0;
               lastidx = items.length - 1;
               firstItem = items[0];
               lastItem = items[lastidx];
+              itemWidth = firstItem.clientWidth;
               for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
                 item = items[i];
                 if (item === lastItem) {
@@ -214,11 +225,8 @@
                 positionItem(item);
                 contentWidth += item.clientWidth;
               }
-              xMax = contentWidth / 2;
-              xMin = -xMax;
-              console.log("-->contentWidth", contentWidth);
-              console.log("-->xMin, xMax", xMin, xMax);
-              return contElm.css('width', contentWidth + 'px');
+              xMax = contentWidth / 2 + element.clientWidth / 2;
+              return xMin = element.clientWidth / 2 - contentWidth / 2;
             };
             onWinResize = function() {
               calcContentWidth();
