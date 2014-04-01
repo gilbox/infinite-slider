@@ -11,7 +11,7 @@ a {
   pointer-events: none;
 }
 
-.kinetic-slider-container {
+.infinite-slider-container {
   position: relative;
   width: 100%;
   height: 400px;
@@ -28,7 +28,7 @@ a {
 }
 
 
-.kinetic-slider-content {
+.infinite-slider-content {
   position: absolute;
   z-index: 1;         // note: make sure you set a z-index
   width: 100%;
