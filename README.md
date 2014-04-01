@@ -1,19 +1,21 @@
-kinetic-slider
+infinite-slider
 ==============
 
 If you'd like to contribute to this project, PRs are appreciated.
+If you have any bugs, reports are welcomed.
+
 
 #How do I add this to my project?
 
-You can download this by:
+You can download infinite-slider by:
 
-* Using bower and running `bower install kinetic-slider`
-* Downloading [the zip file](https://github.com/gilbox/kinetic-slider/archive/master.zip)
+* Using bower and running `bower install infinite-slider`
+* Or downloading [the zip file](https://github.com/gilbox/infinite-slider/archive/master.zip)
 
 
 #Dependencies
 
-kinetic-slider depends on Angular, [angular-mousewheel](https://github.com/monospaced/angular-mousewheel), and [hamsterjs](https://github.com/monospaced/hamster.js).
+infinite-slider depends on Angular, [angular-mousewheel](https://github.com/monospaced/angular-mousewheel), and [hamsterjs](https://github.com/monospaced/hamster.js).
 
 
 # Getting Started
@@ -23,21 +25,21 @@ You need the following script tags:
 ````html
 <script src="vendor/hamster.js"></script>
 <script src="vendor/mousewheel.js"></script>
-<script src="gilbox-kinetic-slider.js"></script>
+<script src="infinite-slider.js"></script>
 ````
 
-Add kinetic-slider as a dependency to your app:
+Add infinite-slider as a dependency to your app:
 
 ````javascript
-angular.module('myApp', ['gilbox.kineticSlider']);
+angular.module('myApp', ['gilbox.infiniteSlider']);
 ````
 
 Note that in your HTML you may optionally provide the content-width,
 otherwise it will be calculated automatically as shown here:
 
 ````html
-  <div kinetic-slider class="kinetic-slider-container">
-    <div class="kinetic-slider-content">
+  <div infinite-slider class="infinite-slider-container">
+    <div class="infinite-slider-content">
 
       <!-- content goes here -->
 
@@ -48,7 +50,7 @@ otherwise it will be calculated automatically as shown here:
 Some minimal styling is required:
 
 ````css
-.kinetic-slider-container {
+.infinite-slider-container {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -56,7 +58,7 @@ Some minimal styling is required:
   overflow: hidden;
 }
 
-.kinetic-slider-content {
+.infinite-slider-content {
   position: absolute;
   z-index: 1;         // note: make sure you set a z-index
   width: 100%;
@@ -66,7 +68,7 @@ Some minimal styling is required:
 
 # Demo
 
-Check out [the demo](http://gilbox.github.io/kinetic-slider/)
+Check out [the demo](http://gilbox.github.io/infinite-slider/)
 
 # License
 
