@@ -2,7 +2,7 @@
   "name": "infinite-slider",
   "version": "1.0.0",
   "main": "./dist/infinite-slider.js",
-  "description": "Kinetic Slider for AngularJS",
+  "description": "Infinite Slider for AngularJS",
   "repository": {
     "type": "git",
     "url": "git://github.com/gilbox/infinite-slider.git"
