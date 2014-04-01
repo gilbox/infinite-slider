@@ -1,9 +1,9 @@
 {
-  "name": "kinetic-slider",
-  "description": "Kinetic Slider from gilbox.me",
+  "name": "infinite-slider",
+  "description": "Infinite Slider from gilbox.me",
   "repository": {
     "type": "git",
-    "url": "git://github.com/gilbox/kinetic-slider.git"
+    "url": "git://github.com/gilbox/infinite-slider.git"
   },
   "devDependencies": {
     "gulp": "~3.5.5",

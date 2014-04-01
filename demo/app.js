@@ -1,1 +1,1 @@
-app = angular.module('myApp', ['gilbox.kineticSlider']);
+app = angular.module('myApp', ['gilbox.infiniteSlider']);

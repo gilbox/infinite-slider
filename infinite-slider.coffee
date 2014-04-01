@@ -1,17 +1,16 @@
 ##
-## <kinetic-slider> attributes
-##
-##  content-width (required)    # width of the content
+## <infinite-slider> attributes
 ##
 ##  acceleration  || 1.15       # "acceleration"  > 1
 ##  friction      || 0.95       # "friction" < 1
 ##  spring-back   || 0.1        # spring-back 0..1 1=fastest
 ##  click-fudge   || 2          # pixels of movement that still allow click
 ##  max-velocity  || 70         # maximum scrollwheel velocity
+##  snap          || false      # per-item snapping **ONLY WORKS IF ALL ITEMS ARE THE SAME WIDTH
 ##
 (->
 
-  angular.module('gilbox.kineticSlider.helpers', []).factory 'browserHelper', ['$window', ($window) ->
+  angular.module('gilbox.infiniteSlider.helpers', []).factory 'browserHelper', ['$window', ($window) ->
     _has3d = undefined
 
     has3d: ->   # perform check the first time the function is invoked
@@ -35,17 +34,17 @@
 
     getTouchPoint: (event) ->
       #console.log "-->event", event
-      if event.touches?
-        e = event.touches[0]
-      else if event.originalEvent? && event.originalEvent.touches? && event.originalEvent.touches.length
-        e = event.originalEvent.touches[0]
-      else
-        e = event
-      angular.extend {x: e.pageX, y: e.pageY}, e
+      e = switch
+        when event.touches?
+          event.touches[0]
+        when event.originalEvent? && event.originalEvent.touches? && event.originalEvent.touches.length
+          event.originalEvent.touches[0]
+        else event
+      angular.extend e, {x: e.pageX, y: e.pageY}
 
   ] # /browserHelper
 
-  angular.module('gilbox.kineticSlider', ['monospaced.mousewheel', 'gilbox.kineticSlider.helpers']).directive 'kineticSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
+  angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
     restrict: 'A'
     scope:
       contentWidth: '=?'
@@ -59,13 +58,17 @@
       spring = attrs.springBack || 0.1      # spring-back 0..1 1=fastest
       clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
       maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
+      snap = attrs.snap || false
 
       v = 0           # "velocity"
-      xOff = 0
-      xMin = 0
+      xCont = 0
+#      xMin = 0
       naxv = -maxv
       winElm = angular.element($window)
       contElm = angular.element(element.children()[0])
+      items = angular.element(contElm.children())
+      console.log "-->items", items
+      window.itms = items
       endTypes = 'touchend touchcancel mouseup mouseleave'
       moveTypes = 'touchmove mousemove'
       startTypes = 'touchstart mousedown'
@@ -74,6 +77,10 @@
       interactionStart = null
       interactionCurrent = null
       prevInteraction = null
+      xMin = 0
+      xMax = 0
+      firstItem = null
+      lastItem = null
 
       contentWidth = scope.contentWidth
 
@@ -87,20 +94,6 @@
             el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
             if el? and !interactionCurrent.button
               document.elementFromPoint(interactionCurrent.clientX, interactionCurrent.clientY).click();
-
-              # this fails on scroll
-#              ev = document.createEvent('MouseEvent')
-#              ev.initMouseEvent 'click', true, true, window, event.detail, interactionCurrent.screenX, interactionCurrent.screenY, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.button, null
-#              el.dispatchEvent ev
-
-              # This fails on chrome with touch emulation:
-#              if ev instanceof MouseEvent
-#                  ...
-#              else  # TouchEvent
-#                ev = document.createEvent('TouchEvent')
-#                ev.initTouchEvent event.type, true, true, window, event.detail, interactionCurrent.x, interactionCurrent.y, 0, 0, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, event.touches, event.targetTouches, event.changedTouches, event.scale, event.rotation
-#                el.dispatchEvent ev
-
           else
             v = prevInteraction.x - interactionCurrent.x  # momentum-generated velocity
             setTimeout (-> allowClick = true), 100  # don't allow click todo: seems hacky, a better way to do this?
@@ -110,11 +103,11 @@
           $document.unbind type
 
 
-      contElm.bind startTypes, (event) ->  # drag start
-        event.preventDefault()   # was commented out because it prevents clicking on mobile, but added click simulation above
+      element.bind startTypes, (event) ->  # drag start
+        event.preventDefault()
         allowClick = false
         v = 0
-        elementStartX = xOff
+        elementStartX = xCont
         interactionStart = interactionCurrent = browserHelper.getTouchPoint event
 
         $document.bind moveTypes, (event) ->  # drag move
@@ -130,11 +123,11 @@
               prevInteraction.y += dy
               interactionCurrent.y += dy
 
-          xOff = elementStartX + (interactionCurrent.x - interactionStart.x)
+          xCont = elementStartX + (interactionCurrent.x - interactionStart.x)
           doTransform()
 
 
-      contElm.bind 'click', (event) ->
+      element.bind 'click', (event) ->
         event.preventDefault() if (!allowClick)
         allowClick
 
@@ -143,64 +136,104 @@
         setInterval (->
           if v
             v *= f
-            xOff -= v
+            xCont -= v
             v = 0 if Math.abs(v) < 0.001
             doTransform()
+            rearrange()
 
-          if (allowClick)
-            if xOff > 0
-              xOff -= xOff*spring
-              doTransform()
-            else
-              if xOff < xMin
-                xOff += (xMin-xOff)*spring
-                doTransform()
+#          absv = Math.abs v
+#          if allowClick && absv > 0 && absv < 3
+#            if xOff > 0
+#              xOff -= xOff*spring
+#              doTransform()
+#            else
+#              if xOff < xMin
+#                xOff += (xMin-xOff)*spring
+#                doTransform()
         ), 20
 
 
+      # endless loop rearrange
+      rearrange = ->
+        if lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51
+          lastItem.x = firstItem.x - lastItem.clientWidth
+          positionItem lastItem
+          [firstItem, lastItem] = [lastItem, lastItem.prevItem]
+          rearrange()
+
+        else if firstItem.x + xCont < xMin - firstItem.clientWidth * 0.51
+          firstItem.x = lastItem.x + firstItem.clientWidth
+          positionItem firstItem
+          [firstItem, lastItem] = [firstItem.nextItem, firstItem]
+          rearrange()
+
+
+      positionItem = (item) ->
+#        angular.element(item).css 'left', item.x + 'px'
+        item.style.left = item.x + 'px'
+
+#      oldn = 0
+#      rearrange = ->
+#        n = -Math.round(xOff/390)
+#        if n == oldn
+#          oldn = n
+#          return
+#        oldn = n
+#
+#        count = items.length
+#        x = n*390
+#        n = n%(count-1)
+#
+#        console.log "-->", n+1, count-1, 0, n
+#        console.log "-->items", items[n..count]
+
+#        indexes = [n+1..count-1].concat([0..n])
+#        for idx in indexes
+#          console.log "-->idx", idx
+#          item = items[idx]
+#          angular.element(item).css 'left', x + 'px'
+#          x += item.clientWidth
+
       doTransform = ->
-        x = xOff
-
-        # out of bounds extra friction
-        if xOff > 0
-          x = xOff/2
-        else if xOff < xMin
-          x = xMin - (xMin-xOff)/2
-
         if has3d
           contElm.css
-            "-webkit-transform": 'translate3d(' + x + 'px, 0px, 0px)'
-            "-moz-transform": 'translate3d(' + x + 'px, 0px, 0px)'
-            "-o-transform": 'translate3d(' + x + 'px, 0px, 0px)'
-            "-ms-transform": 'translate3d(' + x + 'px, 0px, 0px)'
-            transform: 'translate3d(' + x + 'px, 0px,0px)'
+            "-webkit-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
+            "-moz-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
+            "-o-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
+            "-ms-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
+            transform: 'translate3d(' + xCont + 'px, 0px,0px)'
         else
-          contElm.css('left', xOff);
-
-
-      calcxMin = ->
-        xMin = $window.innerWidth - contentWidth
+          contElm.css('left', xCont);
 
 
       calcContentWidth = ->
-        if scope.contentWidth
-          # explicit contentWidth was set
-          contentWidth = scope.contentWidth
-        else
-          # calculate contentWidth by checking widths of the children
-          chs = element.children().eq(0).children()
-          contentWidth = 0
-          contentWidth += c.clientWidth for c in chs
+        # calculate contentWidth by checking widths of the children
+        #chs = element.children().eq(0).children()
+        contentWidth = 0
+        lastidx = items.length-1
+        firstItem = items[0]
+        lastItem = items[lastidx]
+        for item,i in items
+          if item is lastItem then item.nextItem = firstItem else item.nextItem = items[i+1]
+          if item is firstItem then item.prevItem = lastItem else item.prevItem = items[i-1]
 
+          item.x = contentWidth
+          positionItem(item)
+          contentWidth += item.clientWidth
+
+        xMax = contentWidth/2
+        xMin = -xMax
+        console.log "-->contentWidth", contentWidth
+        console.log "-->xMin, xMax", xMin, xMax
         contElm.css 'width', contentWidth + 'px'
 
-      calcContentWidth()
-      scope.$watch('contentWidth', calcContentWidth) if attrs.hasOwnProperty('contentWidth')
 
       onWinResize = ->
         calcContentWidth()
-        calcxMin()
-        xOff = xMin  if xOff < xMin
+        rearrange()
+
+
+      onWinResize()
 
       scope.wheel = (event, delta, deltaX, deltaY) ->
         if deltaX
@@ -212,9 +245,9 @@
             v = -1  if v > -1
             v = Math.max(naxv, (v - 2) * a)
 
+
       # initialize
-      calcxMin()
       run()
       winElm.on 'resize', onWinResize
-  ] # /kineticSlider
+  ] # /infiniteSlider
 )()

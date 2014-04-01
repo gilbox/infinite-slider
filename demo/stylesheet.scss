@@ -7,6 +7,10 @@ header {
   padding: 0 0 0 20px;
 }
 
+a {
+  pointer-events: none;
+}
+
 .kinetic-slider-container {
   position: relative;
   width: 100%;
@@ -30,9 +34,10 @@ header {
   width: 100%;
 
   a {
-    position: relative;
+    position: absolute;
     display: block;
-    float: left;
+    top: 0;
+    left: 0;
     width: 390px;
     height: 390px;
     padding: 5px;
