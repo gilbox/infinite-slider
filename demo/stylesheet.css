@@ -8,10 +8,14 @@ header {
 a {
   pointer-events: none; }
 
+.infinite-slider-boundary {
+  width: 100%; }
+
 .infinite-slider-container {
   position: relative;
-  width: 100%;
+  width: 310px;
   height: 400px;
+  margin: auto;
   z-index: 1;
   overflow: visible; }
   @media all and (max-width: 1000px) {
@@ -34,17 +38,17 @@ a {
     height: 390px;
     overflow: hidden;
     opacity: .2;
-    -moz-transform: scale(0.7);
-    -webkit-transform: scale(0.7);
-    transform: scale(0.7);
+    -moz-transform: scale(0.85);
+    -webkit-transform: scale(0.85);
+    transform: scale(0.85);
     transition: opacity 2s, border 0.5s, -webkit-transform .5s;
     -webkit-transition: opacity 2s, border 0.5s, -webkit-transform .5s;
     border: 10px solid transparent;
     border-radius: 200px; }
     .allow-click .infinite-slider-content a {
       opacity: .5;
-      transition: opacity .5s, border 0.5s;
-      -webkit-transition: opacity .5ss, border 0.5s; }
+      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      -webkit-transition: opacity .5ss, border 0.5s, -webkit-transform .5s; }
     .infinite-slider-content a.closest {
       opacity: 1;
       transition: opacity .5s, border 0.5s, -webkit-transform .5s;

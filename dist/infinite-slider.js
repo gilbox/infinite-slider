@@ -184,7 +184,6 @@
                   if (allowClick && Math.abs(v) < 2) {
                     if (newSnappedItemId !== scope.snappedItemId) {
                       newSnappedItem = angular.element(items[newSnappedItemId]);
-                      console.log("-->scope.snappedItemElm", newSnappedItemId);
                       scope.snappedItemElm.removeClass('snapped');
                       newSnappedItem.addClass('snapped');
                       scope.snappedItemId = newSnappedItemId;
