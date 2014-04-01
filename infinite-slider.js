@@ -60,7 +60,7 @@
           transclude: true,
           template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
           link: function(scope, element, attrs) {
-            var a, allowClick, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -97,12 +97,17 @@
             if (attrs.classifyClosest) {
               scope.closestItem = scope.snappedItemElm;
             }
+            setAllowClick = function(v) {
+              allowClick = v;
+              return element.toggleClass('allow-click', !v);
+            };
+            setAllowClick(true);
             $document.bind(endTypes, function(event) {
               var el, type, _i, _len, _results;
               if (!allowClick) {
                 event.preventDefault();
                 if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
-                  allowClick = true;
+                  setAllowClick(true);
                   el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
                   if ((el != null) && !interactionCurrent.button) {
                     document.elementFromPoint(interactionCurrent.clientX, interactionCurrent.clientY).click();
@@ -110,7 +115,7 @@
                 } else {
                   v = prevInteraction.x - interactionCurrent.x;
                   setTimeout((function() {
-                    return allowClick = true;
+                    return setAllowClick(true);
                   }), 100);
                 }
               }
@@ -125,7 +130,7 @@
             element.bind(startTypes, function(event) {
               var elementStartX;
               event.preventDefault();
-              allowClick = false;
+              setAllowClick(false);
               v = 0;
               elementStartX = xCont;
               interactionStart = interactionCurrent = browserHelper.getTouchPoint(event);

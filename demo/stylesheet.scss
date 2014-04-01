@@ -9,21 +9,6 @@ header {
 
 a {
   pointer-events: none;
-  opacity: .3;
-  transition: opacity .5s, border-radius 0.5s;
-  -webkit-transition: opacity 2s, border-radius 0.5s;
-
-  border-radius: 200px;
-
-  &.closest {
-    opacity: 1;
-    transition: opacity .5s, border-radius 0.5s;
-    -webkit-transition: opacity .5s, border-radius 0.5s;
-  }
-  &.snapped {
-    border-radius: 0;
-  }
-
 }
 
 .infinite-slider-container {
@@ -31,7 +16,7 @@ a {
   width: 100%;
   height: 400px;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
 
   @media all and (max-width: 1000px) {
     height: 310px;
@@ -55,8 +40,39 @@ a {
     left: 0;
     width: 390px;
     height: 390px;
-    padding: 5px;
+//    padding: 5px;
     overflow: hidden;
+
+    opacity: .2;
+    $scale: .7;
+    -moz-transform: scale($scale);
+    -webkit-transform: scale($scale);
+    transform: scale($scale);
+
+    transition: opacity 2s, border 0.5s, -webkit-transform .5s;
+    -webkit-transition: opacity 2s, border 0.5s, -webkit-transform .5s;
+
+    border: 10px solid transparent;
+    border-radius: 200px;
+
+    .allow-click & {
+      opacity: .5;
+      transition: opacity .5s, border 0.5s;
+      -webkit-transition: opacity .5ss, border 0.5s;
+    }
+
+    &.closest {
+      opacity: 1;
+      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      -webkit-transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+
+      -moz-transform: scale(1);
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+    &.snapped {
+      border: 10px solid rgba(255,0,0,0.5);
+    }
 
     img {
       height: 100%;

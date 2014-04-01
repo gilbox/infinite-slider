@@ -6,24 +6,14 @@ header {
   padding: 0 0 0 20px; }
 
 a {
-  pointer-events: none;
-  opacity: .3;
-  transition: opacity .5s, border-radius 0.5s;
-  -webkit-transition: opacity 2s, border-radius 0.5s;
-  border-radius: 200px; }
-  a.closest {
-    opacity: 1;
-    transition: opacity .5s, border-radius 0.5s;
-    -webkit-transition: opacity .5s, border-radius 0.5s; }
-  a.snapped {
-    border-radius: 0; }
+  pointer-events: none; }
 
 .infinite-slider-container {
   position: relative;
   width: 100%;
   height: 400px;
   z-index: 1;
-  overflow: hidden; }
+  overflow: visible; }
   @media all and (max-width: 1000px) {
     .infinite-slider-container {
       height: 310px; } }
@@ -42,8 +32,28 @@ a {
     left: 0;
     width: 390px;
     height: 390px;
-    padding: 5px;
-    overflow: hidden; }
+    overflow: hidden;
+    opacity: .2;
+    -moz-transform: scale(0.7);
+    -webkit-transform: scale(0.7);
+    transform: scale(0.7);
+    transition: opacity 2s, border 0.5s, -webkit-transform .5s;
+    -webkit-transition: opacity 2s, border 0.5s, -webkit-transform .5s;
+    border: 10px solid transparent;
+    border-radius: 200px; }
+    .allow-click .infinite-slider-content a {
+      opacity: .5;
+      transition: opacity .5s, border 0.5s;
+      -webkit-transition: opacity .5ss, border 0.5s; }
+    .infinite-slider-content a.closest {
+      opacity: 1;
+      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      -webkit-transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      -moz-transform: scale(1);
+      -webkit-transform: scale(1);
+      transform: scale(1); }
+    .infinite-slider-content a.snapped {
+      border: 10px solid rgba(255, 0, 0, 0.5); }
     .infinite-slider-content a img {
       height: 100%; }
     @media all and (max-width: 1000px) {

@@ -90,17 +90,23 @@
       if (attrs.classifyClosest)
         scope.closestItem = scope.snappedItemElm
 
+      setAllowClick = (v) ->
+        allowClick = v
+        element.toggleClass 'allow-click', !v
+
+      setAllowClick true
+
       $document.bind endTypes, (event) -> # drag end
         unless (allowClick)
           event.preventDefault()
           if (interactionStart == null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge))
-            allowClick = true # click now
+            setAllowClick true # click now
             el = document.elementFromPoint(interactionCurrent.x, interactionCurrent.y);
             if el? and !interactionCurrent.button
               document.elementFromPoint(interactionCurrent.clientX, interactionCurrent.clientY).click();
           else
             v = prevInteraction.x - interactionCurrent.x  # momentum-generated velocity
-            setTimeout (-> allowClick = true), 100  # don't allow click todo: seems hacky, a better way to do this?
+            setTimeout (-> setAllowClick true), 100  # don't allow click todo: seems hacky, a better way to do this?
 
         interactionStart = null
         for type in moveTypesArray
@@ -109,7 +115,7 @@
 
       element.bind startTypes, (event) ->  # drag start
         event.preventDefault()
-        allowClick = false
+        setAllowClick false
         v = 0
         elementStartX = xCont
         interactionStart = interactionCurrent = browserHelper.getTouchPoint event
