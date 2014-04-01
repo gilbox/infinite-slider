@@ -170,30 +170,8 @@
 
 
       positionItem = (item) ->
-#        angular.element(item).css 'left', item.x + 'px'
         item.style.left = item.x + 'px'
 
-#      oldn = 0
-#      rearrange = ->
-#        n = -Math.round(xOff/390)
-#        if n == oldn
-#          oldn = n
-#          return
-#        oldn = n
-#
-#        count = items.length
-#        x = n*390
-#        n = n%(count-1)
-#
-#        console.log "-->", n+1, count-1, 0, n
-#        console.log "-->items", items[n..count]
-
-#        indexes = [n+1..count-1].concat([0..n])
-#        for idx in indexes
-#          console.log "-->idx", idx
-#          item = items[idx]
-#          angular.element(item).css 'left', x + 'px'
-#          x += item.clientWidth
 
       doTransform = ->
         if has3d
@@ -208,8 +186,6 @@
 
 
       calcContentWidth = ->
-        # calculate contentWidth by checking widths of the children
-        #chs = element.children().eq(0).children()
         contentWidth = 0
         lastidx = items.length-1
         firstItem = items[0]
@@ -223,10 +199,9 @@
           positionItem(item)
           contentWidth += item.clientWidth
 
-        console.log "-->element.clientWidth, element", element.clientWidth, element
-        boundsOffset = element[0].clientWidth/2 - itemWidth/2
-        xMax = contentWidth/2 + boundsOffset
-        xMin = boundsOffset - contentWidth/2
+        boundsOffsetX = element[0].clientWidth/2 - itemWidth/2
+        xMax = contentWidth/2 + boundsOffsetX
+        xMin = boundsOffsetX - contentWidth/2
 
 
       onWinResize = ->
