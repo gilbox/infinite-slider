@@ -223,8 +223,10 @@
           positionItem(item)
           contentWidth += item.clientWidth
 
-        xMax = contentWidth/2 + element.clientWidth/2
-        xMin = element.clientWidth/2 - contentWidth/2
+        console.log "-->element.clientWidth, element", element.clientWidth, element
+        boundsOffset = element[0].clientWidth/2 - itemWidth/2
+        xMax = contentWidth/2 + boundsOffset
+        xMin = boundsOffset - contentWidth/2
 
 
       onWinResize = ->

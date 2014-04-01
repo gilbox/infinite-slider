@@ -203,7 +203,7 @@
               }
             };
             calcContentWidth = function() {
-              var contentWidth, i, item, lastidx, _i, _len;
+              var boundsOffset, contentWidth, i, item, lastidx, _i, _len;
               contentWidth = 0;
               lastidx = items.length - 1;
               firstItem = items[0];
@@ -225,8 +225,10 @@
                 positionItem(item);
                 contentWidth += item.clientWidth;
               }
-              xMax = contentWidth / 2 + element.clientWidth / 2;
-              return xMin = element.clientWidth / 2 - contentWidth / 2;
+              console.log("-->element.clientWidth, element", element.clientWidth, element);
+              boundsOffset = element[0].clientWidth / 2 - itemWidth / 2;
+              xMax = contentWidth / 2 + boundsOffset;
+              return xMin = boundsOffset - contentWidth / 2;
             };
             onWinResize = function() {
               calcContentWidth();
