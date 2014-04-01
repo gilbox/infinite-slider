@@ -51,17 +51,16 @@
     transclude: true
     template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
     link: (scope, element, attrs) ->
-
       a = attrs.acceleration || 1.05         # "acceleration"  > 1
       f = attrs.friction || 0.95            # "friction" < 1
       spring = attrs.springBack || 0.1      # spring-back 0..1 1=fastest
       clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
       maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
-      snap = attrs.snap || false
+      snap = attrs.snap && attrs.snap != 'false'
+      classifyClosest = attrs.classifyClosest && attrs.classifyClosest != 'false'
 
       v = 0           # "velocity"
       xCont = 0
-#      xMin = 0
       naxv = -maxv
       winElm = angular.element($window)
       contElm = element.children().eq(0)
@@ -83,6 +82,13 @@
       itemWidth = 0
 
       has3d = browserHelper.has3d()
+
+      if (snap)
+        scope.snappedItemId = 0
+        scope.snappedItemElm = items.eq(0)
+
+      if (attrs.classifyClosest)
+        scope.closestItem = scope.snappedItemElm
 
       $document.bind endTypes, (event) -> # drag end
         unless (allowClick)
@@ -140,18 +146,35 @@
             v = 0 if Math.abs(v) < 0.001
             changed = true
 
-          if allowClick && Math.abs(v) < 2
+          if classifyClosest || snap
+
             snapTargetX = itemWidth * Math.round(xCont / itemWidth)
-            if xCont != snapTargetX
-              xCont += (snapTargetX-xCont)*spring
-              changed = true
+            newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) % items.length
+            newSnappedItem = items[newSnappedItemId].elm
+
+            if classifyClosest && scope.closestItem != newSnappedItem
+              scope.closestItem.removeClass 'closest'
+              newSnappedItem.addClass 'closest'
+              scope.closestItem = newSnappedItem
+
+            if allowClick && Math.abs(v) < 2
+              if newSnappedItemId != scope.snappedItemId
+                newSnappedItem = angular.element(items[newSnappedItemId])
+                console.log "-->scope.snappedItemElm", newSnappedItemId
+                scope.snappedItemElm.removeClass 'snapped'
+                newSnappedItem.addClass 'snapped'
+                scope.snappedItemId = newSnappedItemId
+                scope.snappedItemElm = newSnappedItem
+
+              if xCont != snapTargetX
+                xCont += (snapTargetX-xCont)*spring
+                changed = true
 
           if changed
             doTransform()
             rearrange()
 
         ), 20
-
 
 
       # endless loop rearrange
@@ -196,6 +219,8 @@
           if item is firstItem then item.prevItem = lastItem else item.prevItem = items[i-1]
 
           item.x = contentWidth
+          item.idx = i
+          item.elm = items.eq(i)
           positionItem(item)
           contentWidth += item.clientWidth
 

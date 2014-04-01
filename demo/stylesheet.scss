@@ -9,6 +9,21 @@ header {
 
 a {
   pointer-events: none;
+  opacity: .3;
+  transition: opacity .5s, border-radius 0.5s;
+  -webkit-transition: opacity 2s, border-radius 0.5s;
+
+  border-radius: 200px;
+
+  &.closest {
+    opacity: 1;
+    transition: opacity .5s, border-radius 0.5s;
+    -webkit-transition: opacity .5s, border-radius 0.5s;
+  }
+  &.snapped {
+    border-radius: 0;
+  }
+
 }
 
 .infinite-slider-container {

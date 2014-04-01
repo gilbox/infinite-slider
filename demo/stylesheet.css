@@ -6,7 +6,17 @@ header {
   padding: 0 0 0 20px; }
 
 a {
-  pointer-events: none; }
+  pointer-events: none;
+  opacity: .3;
+  transition: opacity .5s, border-radius 0.5s;
+  -webkit-transition: opacity 2s, border-radius 0.5s;
+  border-radius: 200px; }
+  a.closest {
+    opacity: 1;
+    transition: opacity .5s, border-radius 0.5s;
+    -webkit-transition: opacity .5s, border-radius 0.5s; }
+  a.snapped {
+    border-radius: 0; }
 
 .infinite-slider-container {
   position: relative;

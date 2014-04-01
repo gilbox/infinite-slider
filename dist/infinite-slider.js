@@ -60,13 +60,14 @@
           transclude: true,
           template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
           link: function(scope, element, attrs) {
-            var a, allowClick, calcContentWidth, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
             clickFudge = attrs.clickFudge || 2;
             maxv = attrs.maxVelocity || 50;
-            snap = attrs.snap || false;
+            snap = attrs.snap && attrs.snap !== 'false';
+            classifyClosest = attrs.classifyClosest && attrs.classifyClosest !== 'false';
             v = 0;
             xCont = 0;
             naxv = -maxv;
@@ -89,6 +90,13 @@
             lastItem = null;
             itemWidth = 0;
             has3d = browserHelper.has3d();
+            if (snap) {
+              scope.snappedItemId = 0;
+              scope.snappedItemElm = items.eq(0);
+            }
+            if (attrs.classifyClosest) {
+              scope.closestItem = scope.snappedItemElm;
+            }
             $document.bind(endTypes, function(event) {
               var el, type, _i, _len, _results;
               if (!allowClick) {
@@ -149,7 +157,7 @@
             });
             run = function() {
               return setInterval((function() {
-                var changed, snapTargetX;
+                var changed, newSnappedItem, newSnappedItemId, snapTargetX;
                 changed = false;
                 if (v) {
                   v *= f;
@@ -159,11 +167,28 @@
                   }
                   changed = true;
                 }
-                if (allowClick && Math.abs(v) < 2) {
+                if (classifyClosest || snap) {
                   snapTargetX = itemWidth * Math.round(xCont / itemWidth);
-                  if (xCont !== snapTargetX) {
-                    xCont += (snapTargetX - xCont) * spring;
-                    changed = true;
+                  newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
+                  newSnappedItem = items[newSnappedItemId].elm;
+                  if (classifyClosest && scope.closestItem !== newSnappedItem) {
+                    scope.closestItem.removeClass('closest');
+                    newSnappedItem.addClass('closest');
+                    scope.closestItem = newSnappedItem;
+                  }
+                  if (allowClick && Math.abs(v) < 2) {
+                    if (newSnappedItemId !== scope.snappedItemId) {
+                      newSnappedItem = angular.element(items[newSnappedItemId]);
+                      console.log("-->scope.snappedItemElm", newSnappedItemId);
+                      scope.snappedItemElm.removeClass('snapped');
+                      newSnappedItem.addClass('snapped');
+                      scope.snappedItemId = newSnappedItemId;
+                      scope.snappedItemElm = newSnappedItem;
+                    }
+                    if (xCont !== snapTargetX) {
+                      xCont += (snapTargetX - xCont) * spring;
+                      changed = true;
+                    }
                   }
                 }
                 if (changed) {
@@ -222,6 +247,8 @@
                   item.prevItem = items[i - 1];
                 }
                 item.x = contentWidth;
+                item.idx = i;
+                item.elm = items.eq(i);
                 positionItem(item);
                 contentWidth += item.clientWidth;
               }
