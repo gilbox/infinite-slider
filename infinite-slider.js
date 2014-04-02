@@ -51,16 +51,27 @@
         };
       }
     ]);
-    return angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive('infiniteSlider', [
+    return angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive('infiniteSliderBoundary', function() {
+      return {
+        restrict: 'AE',
+        controller: [
+          '$scope', '$element', function($scope, $element) {
+            this.elm = $element;
+            return this;
+          }
+        ]
+      };
+    }).directive('infiniteSlider', [
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
-          restrict: 'A',
+          restrict: 'AE',
           scope: {},
           replace: true,
           transclude: true,
+          require: '?^infiniteSliderBoundary',
           template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
-          link: function(scope, element, attrs) {
-            var a, allowClick, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+          link: function(scope, element, attrs, boundaryCtrl) {
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -72,10 +83,9 @@
             xCont = 0;
             naxv = -maxv;
             winElm = angular.element($window);
+            boundaryElm = (boundaryCtrl && boundaryCtrl.elm) || element;
             contElm = element.children().eq(0);
             items = contElm.children();
-            console.log("-->items", items);
-            window.itms = items;
             endTypes = 'touchend touchcancel mouseup mouseleave';
             moveTypes = 'touchmove mousemove';
             startTypes = 'touchstart mousedown';
@@ -127,7 +137,7 @@
               }
               return _results;
             });
-            element.bind(startTypes, function(event) {
+            boundaryElm.bind(startTypes, function(event) {
               var elementStartX;
               event.preventDefault();
               setAllowClick(false);
@@ -154,7 +164,7 @@
                 return doTransform();
               });
             });
-            element.bind('click', function(event) {
+            boundaryElm.bind('click', function(event) {
               if (!allowClick) {
                 event.preventDefault();
               }
@@ -162,15 +172,15 @@
             });
             run = function() {
               return setInterval((function() {
-                var changed, newSnappedItem, newSnappedItemId, snapTargetX;
-                changed = false;
+                var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
+                xchanged = false;
                 if (v) {
                   v *= f;
                   xCont -= v;
                   if (Math.abs(v) < 0.001) {
                     v = 0;
                   }
-                  changed = true;
+                  xchanged = true;
                 }
                 if (classifyClosest || snap) {
                   snapTargetX = itemWidth * Math.round(xCont / itemWidth);
@@ -191,11 +201,11 @@
                     }
                     if (xCont !== snapTargetX) {
                       xCont += (snapTargetX - xCont) * spring;
-                      changed = true;
+                      xchanged = true;
                     }
                   }
                 }
-                if (changed) {
+                if (xchanged) {
                   doTransform();
                   return rearrange();
                 }

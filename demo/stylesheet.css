@@ -9,11 +9,13 @@ a {
   pointer-events: none; }
 
 .infinite-slider-boundary {
-  width: 100%; }
+  width: 100%;
+  overflow: hidden;
+  height: 350px; }
 
 .infinite-slider-container {
   position: relative;
-  width: 310px;
+  width: 320px;
   height: 400px;
   margin: auto;
   z-index: 1;
