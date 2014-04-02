@@ -105,8 +105,9 @@
             itemWidth = 0;
             enableRun = true;
             has3d = browserHelper.has3d();
-            scope.$watch('snappedItemId', function(newId, oldId) {
-              if (angular.isNumber(newId) && newId >= 0 && newId < items.length) {
+            scope.$watch('snappedItemId', function(newId) {
+              newId = parseInt(newId);
+              if ((0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
                 setSnappedItem(items[newId].elm);
                 xCont = -itemWidth * newId;
                 calcContentWidth();
@@ -182,8 +183,8 @@
                 scope.snappedItemElm.removeClass('snapped');
               }
               newSnappedItem.addClass('snapped');
-              scope.snappedItemId = newSnappedItem.idx;
-              return scope.snappedItemElm = newSnappedItem;
+              scope.snappedItemElm = newSnappedItem;
+              return scope.snappedItemId = newSnappedItem.idx;
             };
             setClosestItem = function(newClosestItem) {
               if (scope.closestItem) {

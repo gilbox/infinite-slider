@@ -96,9 +96,12 @@
         enableRun = true
 
         has3d = browserHelper.has3d()
-        
-        scope.$watch 'snappedItemId', (newId, oldId) ->
-          if angular.isNumber(newId) and newId >= 0 and newId < items.length
+
+        scope.$watch 'snappedItemId', (newId) ->
+          newId = parseInt(newId)
+          # the second condition determines if the id was changed internally,
+          # because if it was then we don't need to do this stuff
+          if 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
             setSnappedItem items[newId].elm
             xCont = -itemWidth * newId
             calcContentWidth()
@@ -160,8 +163,8 @@
         setSnappedItem = (newSnappedItem) ->
           scope.snappedItemElm.removeClass 'snapped' if scope.snappedItemElm
           newSnappedItem.addClass 'snapped'
-          scope.snappedItemId = newSnappedItem.idx
           scope.snappedItemElm = newSnappedItem
+          scope.snappedItemId = newSnappedItem.idx
 
 
         setClosestItem = (newClosestItem) ->

@@ -43,17 +43,17 @@ a {
     -moz-transform: scale(0.85);
     -webkit-transform: scale(0.85);
     transform: scale(0.85);
-    transition: opacity 2s, border 0.5s, -webkit-transform .5s;
+    transition: opacity 2s, border 0.5s, transform .5s;
     -webkit-transition: opacity 2s, border 0.5s, -webkit-transform .5s;
     border: 10px solid transparent;
     border-radius: 200px; }
     .allow-click .infinite-slider-content a {
       opacity: .5;
-      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      transition: opacity .5s, border 0.5s, transform .5s;
       -webkit-transition: opacity .5ss, border 0.5s, -webkit-transform .5s; }
     .infinite-slider-content a.closest {
       opacity: 1;
-      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      transition: opacity .5s, border 0.5s, transform .5s;
       -webkit-transition: opacity .5s, border 0.5s, -webkit-transform .5s;
       -moz-transform: scale(1);
       -webkit-transform: scale(1);

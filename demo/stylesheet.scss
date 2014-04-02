@@ -56,7 +56,7 @@ a {
     -webkit-transform: scale($scale);
     transform: scale($scale);
 
-    transition: opacity 2s, border 0.5s, -webkit-transform .5s;
+    transition: opacity 2s, border 0.5s, transform .5s;
     -webkit-transition: opacity 2s, border 0.5s, -webkit-transform .5s;
 
     border: 10px solid transparent;
@@ -64,13 +64,13 @@ a {
 
     .allow-click & {
       opacity: .5;
-      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      transition: opacity .5s, border 0.5s, transform .5s;
       -webkit-transition: opacity .5ss, border 0.5s, -webkit-transform .5s;
     }
 
     &.closest {
       opacity: 1;
-      transition: opacity .5s, border 0.5s, -webkit-transform .5s;
+      transition: opacity .5s, border 0.5s, transform .5s;
       -webkit-transition: opacity .5s, border 0.5s, -webkit-transform .5s;
 
       -moz-transform: scale(1);
