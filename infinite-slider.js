@@ -73,7 +73,7 @@
           scope: {},
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -102,13 +102,6 @@
             lastItem = null;
             itemWidth = 0;
             has3d = browserHelper.has3d();
-            if (snap) {
-              scope.snappedItemId = 0;
-              scope.snappedItemElm = items.eq(0);
-            }
-            if (attrs.classifyClosest) {
-              scope.closestItem = scope.snappedItemElm;
-            }
             setAllowClick = function(v) {
               allowClick = v;
               return element.toggleClass('allow-click', !v);
@@ -172,6 +165,21 @@
               }
               return allowClick;
             });
+            setSnappedItem = function(newSnappedItem) {
+              if (scope.snappedItemElm) {
+                scope.snappedItemElm.removeClass('snapped');
+              }
+              newSnappedItem.addClass('snapped');
+              scope.snappedItemId = newSnappedItem.idx;
+              return scope.snappedItemElm = newSnappedItem;
+            };
+            setClosestItem = function(newClosestItem) {
+              if (scope.closestItem) {
+                scope.closestItem.removeClass('closest');
+              }
+              newClosestItem.addClass('closest');
+              return scope.closestItem = newClosestItem;
+            };
             run = function() {
               return setInterval((function() {
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
@@ -189,17 +197,11 @@
                   newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
                   newSnappedItem = items[newSnappedItemId].elm;
                   if (classifyClosest && scope.closestItem !== newSnappedItem) {
-                    scope.closestItem.removeClass('closest');
-                    newSnappedItem.addClass('closest');
-                    scope.closestItem = newSnappedItem;
+                    setClosestItem(newSnappedItem);
                   }
                   if (allowClick && Math.abs(v) < 2) {
                     if (newSnappedItemId !== scope.snappedItemId) {
-                      newSnappedItem = angular.element(items[newSnappedItemId]);
-                      scope.snappedItemElm.removeClass('snapped');
-                      newSnappedItem.addClass('snapped');
-                      scope.snappedItemId = newSnappedItemId;
-                      scope.snappedItemElm = newSnappedItem;
+                      setSnappedItem(newSnappedItem);
                     }
                     if (xCont !== snapTargetX) {
                       xCont += (snapTargetX - xCont) * spring;
@@ -293,6 +295,12 @@
                 }
               }
             });
+            if (snap) {
+              setSnappedItem(items[0].elm);
+            }
+            if (classifyClosest) {
+              setClosestItem(items[0].elm);
+            }
             run();
             return winElm.on('resize', onWinResize);
           }

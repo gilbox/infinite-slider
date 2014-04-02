@@ -95,13 +95,6 @@
 
         has3d = browserHelper.has3d()
 
-        if (snap)
-          scope.snappedItemId = 0
-          scope.snappedItemElm = items.eq(0)
-
-        if (attrs.classifyClosest)
-          scope.closestItem = scope.snappedItemElm
-
         setAllowClick = (v) ->
           allowClick = v
           element.toggleClass 'allow-click', !v
@@ -154,6 +147,17 @@
           allowClick
 
 
+        setSnappedItem = (newSnappedItem) ->
+          scope.snappedItemElm.removeClass 'snapped' if scope.snappedItemElm
+          newSnappedItem.addClass 'snapped'
+          scope.snappedItemId = newSnappedItem.idx
+          scope.snappedItemElm = newSnappedItem
+
+        setClosestItem = (newClosestItem) ->
+          scope.closestItem.removeClass 'closest' if scope.closestItem
+          newClosestItem.addClass 'closest'
+          scope.closestItem = newClosestItem
+
         run = ->
           setInterval (->
             xchanged = false
@@ -171,17 +175,11 @@
               newSnappedItem = items[newSnappedItemId].elm
 
               if classifyClosest && scope.closestItem != newSnappedItem
-                scope.closestItem.removeClass 'closest'
-                newSnappedItem.addClass 'closest'
-                scope.closestItem = newSnappedItem
+                setClosestItem newSnappedItem
 
               if allowClick && Math.abs(v) < 2
                 if newSnappedItemId != scope.snappedItemId
-                  newSnappedItem = angular.element(items[newSnappedItemId])
-                  scope.snappedItemElm.removeClass 'snapped'
-                  newSnappedItem.addClass 'snapped'
-                  scope.snappedItemId = newSnappedItemId
-                  scope.snappedItemElm = newSnappedItem
+                  setSnappedItem newSnappedItem
 
                 if xCont != snapTargetX
                   xCont += (snapTargetX-xCont)*spring
@@ -250,6 +248,11 @@
           calcContentWidth()
           rearrange()
 
+          # todo: to prevent snapped item from changing on window resize, we could calculate
+          #       change in position of element and offset xCont accordingliny
+
+
+        # initialize
 
         onWinResize()
 
@@ -264,7 +267,10 @@
               v = Math.max(naxv, (v - 2) * a)
 
 
-        # initialize
+
+        if snap             then setSnappedItem items[0].elm
+        if classifyClosest  then setClosestItem items[0].elm
+
         run()
         winElm.on 'resize', onWinResize
     ] # /infiniteSlider
