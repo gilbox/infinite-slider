@@ -54,9 +54,14 @@
     return angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive('infiniteSliderBoundary', function() {
       return {
         restrict: 'AE',
+        transclude: true,
+        template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
         controller: [
           '$scope', '$element', function($scope, $element) {
             this.elm = $element;
+            this.setWheelFn = function(fn) {
+              return $scope.wheel = fn;
+            };
             return this;
           }
         ]
@@ -64,12 +69,9 @@
     }).directive('infiniteSlider', [
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
-          restrict: 'AE',
+          restrict: 'A',
           scope: {},
-          replace: true,
-          transclude: true,
-          require: '?^infiniteSliderBoundary',
-          template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
+          require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
             var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
@@ -275,7 +277,7 @@
               return rearrange();
             };
             onWinResize();
-            scope.wheel = function(event, delta, deltaX, deltaY) {
+            boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
               if (deltaX) {
                 event.preventDefault();
                 if (deltaX > 0) {
@@ -290,7 +292,7 @@
                   return v = Math.max(naxv, (v - 2) * a);
                 }
               }
-            };
+            });
             run();
             return winElm.on('resize', onWinResize);
           }

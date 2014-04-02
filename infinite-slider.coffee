@@ -46,22 +46,22 @@
 
   angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers'])
 
-    # optionally define a touch-region using infinite-slider-boundary
-    # can be the same as, or a parent of the infinite-slider element.
+    # define a touch-region using infinite-slider-boundary
+    # must be a parent of the infinite-slider element.
     .directive 'infiniteSliderBoundary', ->
       restrict: 'AE'
+      transclude: true
+      template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
       controller: ['$scope', '$element', ($scope, $element) ->
         @elm = $element
+        @setWheelFn = (fn) -> $scope.wheel = fn
         @
       ]
 
     .directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
-      restrict: 'AE'
+      restrict: 'A'
       scope: {}
-      replace: true
-      transclude: true
-      require: '?^infiniteSliderBoundary'
-      template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
+      require: '^infiniteSliderBoundary'
       link: (scope, element, attrs, boundaryCtrl) ->
         a = attrs.acceleration || 1.05         # "acceleration"  > 1
         f = attrs.friction || 0.95            # "friction" < 1
@@ -253,7 +253,7 @@
 
         onWinResize()
 
-        scope.wheel = (event, delta, deltaX, deltaY) ->
+        boundaryCtrl.setWheelFn (event, delta, deltaX, deltaY) ->
           if deltaX
             event.preventDefault()
             if deltaX > 0
