@@ -75,7 +75,7 @@
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, enableRun, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -103,9 +103,16 @@
             firstItem = null;
             lastItem = null;
             itemWidth = 0;
+            enableRun = true;
             has3d = browserHelper.has3d();
-            scope.$watch('snappedItemId', function(oldV, newV) {
-              return console.log("-->oldV, newV", oldV, newV);
+            scope.$watch('snappedItemId', function(newId, oldId) {
+              if ((newId != null) && newId < items.length) {
+                setSnappedItem(items[newId].elm);
+                xCont = -itemWidth * newId;
+                calcContentWidth();
+                rearrange();
+                return doTransform(true);
+              }
             });
             setAllowClick = function(v) {
               allowClick = v;
@@ -188,36 +195,38 @@
             run = function() {
               return setInterval((function() {
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
-                xchanged = false;
-                if (v) {
-                  v *= f;
-                  xCont -= v;
-                  if (Math.abs(v) < 0.001) {
-                    v = 0;
-                  }
-                  xchanged = true;
-                }
-                if (classifyClosest || snap) {
-                  snapTargetX = itemWidth * Math.round(xCont / itemWidth);
-                  newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
-                  newSnappedItem = items[newSnappedItemId].elm;
-                  if (classifyClosest && scope.closestItem !== newSnappedItem) {
-                    setClosestItem(newSnappedItem);
-                  }
-                  if (allowClick && Math.abs(v) < 2) {
-                    if (newSnappedItemId !== scope.snappedItemId) {
-                      setSnappedItem(newSnappedItem);
-                      scope.$apply();
+                if (enableRun) {
+                  xchanged = false;
+                  if (v) {
+                    v *= f;
+                    xCont -= v;
+                    if (Math.abs(v) < 0.001) {
+                      v = 0;
                     }
-                    if (xCont !== snapTargetX) {
-                      xCont += (snapTargetX - xCont) * spring;
-                      xchanged = true;
+                    xchanged = true;
+                  }
+                  if (classifyClosest || snap) {
+                    snapTargetX = itemWidth * Math.round(xCont / itemWidth);
+                    newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
+                    newSnappedItem = items[newSnappedItemId].elm;
+                    if (classifyClosest && scope.closestItem !== newSnappedItem) {
+                      setClosestItem(newSnappedItem);
+                    }
+                    if (allowClick && Math.abs(v) < 2) {
+                      if (newSnappedItemId !== scope.snappedItemId) {
+                        setSnappedItem(newSnappedItem);
+                        scope.$apply();
+                      }
+                      if (xCont !== snapTargetX) {
+                        xCont += (snapTargetX - xCont) * spring;
+                        xchanged = true;
+                      }
                     }
                   }
-                }
-                if (xchanged) {
-                  doTransform();
-                  return rearrange();
+                  if (xchanged) {
+                    doTransform();
+                    return rearrange();
+                  }
                 }
               }), 20);
             };
@@ -238,14 +247,28 @@
             positionItem = function(item) {
               return item.style.left = item.x + 'px';
             };
-            doTransform = function() {
+            doTransform = function(transition) {
               if (has3d) {
+                if (transition) {
+                  contElm.css({
+                    '-webkit-transition': '-webkit-transform .5s',
+                    'transition': 'transform .5s'
+                  });
+                  enableRun = false;
+                  setTimeout(function() {
+                    contElm.css({
+                      '-webkit-transition': 'none',
+                      'transition': 'none'
+                    });
+                    return enableRun = true;
+                  }, 500);
+                }
                 return contElm.css({
-                  "-webkit-transform": 'translate3d(' + xCont + 'px, 0px, 0px)',
-                  "-moz-transform": 'translate3d(' + xCont + 'px, 0px, 0px)',
-                  "-o-transform": 'translate3d(' + xCont + 'px, 0px, 0px)',
-                  "-ms-transform": 'translate3d(' + xCont + 'px, 0px, 0px)',
-                  transform: 'translate3d(' + xCont + 'px, 0px,0px)'
+                  '-webkit-transform': 'translate3d(' + xCont + 'px, 0px, 0px)',
+                  '-moz-transform': 'translate3d(' + xCont + 'px, 0px, 0px)',
+                  '-o-transform': 'translate3d(' + xCont + 'px, 0px, 0px)',
+                  '-ms-transform': 'translate3d(' + xCont + 'px, 0px, 0px)',
+                  'transform': 'translate3d(' + xCont + 'px, 0px,0px)'
                 });
               } else {
                 return contElm.css('left', xCont);

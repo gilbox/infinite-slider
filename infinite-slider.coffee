@@ -93,11 +93,17 @@
         firstItem = null
         lastItem = null
         itemWidth = 0
+        enableRun = true
 
         has3d = browserHelper.has3d()
         
-        scope.$watch 'snappedItemId', (oldV, newV) ->
-          console.log "-->oldV, newV", oldV, newV
+        scope.$watch 'snappedItemId', (newId, oldId) ->
+          if newId? && newId < items.length
+            setSnappedItem items[newId].elm
+            xCont = -itemWidth * newId
+            calcContentWidth()
+            rearrange()
+            doTransform(true)
 
         setAllowClick = (v) ->
           allowClick = v
@@ -166,35 +172,36 @@
 
         run = ->
           setInterval (->
-            xchanged = false
+            if enableRun
+              xchanged = false
 
-            if v
-              v *= f
-              xCont -= v
-              v = 0 if Math.abs(v) < 0.001
-              xchanged = true
+              if v
+                v *= f
+                xCont -= v
+                v = 0 if Math.abs(v) < 0.001
+                xchanged = true
 
-            if classifyClosest || snap
+              if classifyClosest || snap
 
-              snapTargetX = itemWidth * Math.round(xCont / itemWidth)
-              newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) % items.length
-              newSnappedItem = items[newSnappedItemId].elm
+                snapTargetX = itemWidth * Math.round(xCont / itemWidth)
+                newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) % items.length
+                newSnappedItem = items[newSnappedItemId].elm
 
-              if classifyClosest && scope.closestItem != newSnappedItem
-                setClosestItem newSnappedItem
+                if classifyClosest && scope.closestItem != newSnappedItem
+                  setClosestItem newSnappedItem
 
-              if allowClick && Math.abs(v) < 2
-                if newSnappedItemId != scope.snappedItemId
-                  setSnappedItem newSnappedItem
-                  scope.$apply()
+                if allowClick && Math.abs(v) < 2
+                  if newSnappedItemId != scope.snappedItemId
+                    setSnappedItem newSnappedItem
+                    scope.$apply()
 
-                if xCont != snapTargetX
-                  xCont += (snapTargetX-xCont)*spring
-                  xchanged = true
+                  if xCont != snapTargetX
+                    xCont += (snapTargetX-xCont)*spring
+                    xchanged = true
 
-            if xchanged
-              doTransform()
-              rearrange()
+              if xchanged
+                doTransform()
+                rearrange()
 
           ), 20
 
@@ -218,14 +225,31 @@
           item.style.left = item.x + 'px'
 
 
-        doTransform = ->
+        # use css transition (transition==true) for a smooth animation
+        # when jumping to a new snapped-item-id
+        doTransform = (transition)->
           if has3d
+            if transition
+              contElm.css
+                '-webkit-transition': '-webkit-transform .5s'
+                'transition': 'transform .5s'
+              enableRun = false
+
+              setTimeout ->
+                # todo: calling doTransform(true) before timeout completes could be trouble
+                contElm.css
+                  '-webkit-transition': 'none'
+                  'transition': 'none'
+                enableRun = true
+              , 500
+
             contElm.css
-              "-webkit-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
-              "-moz-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
-              "-o-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
-              "-ms-transform": 'translate3d(' + xCont + 'px, 0px, 0px)'
-              transform: 'translate3d(' + xCont + 'px, 0px,0px)'
+              '-webkit-transform': 'translate3d(' + xCont + 'px, 0px, 0px)'
+              '-moz-transform': 'translate3d(' + xCont + 'px, 0px, 0px)'
+              '-o-transform': 'translate3d(' + xCont + 'px, 0px, 0px)'
+              '-ms-transform': 'translate3d(' + xCont + 'px, 0px, 0px)'
+              'transform': 'translate3d(' + xCont + 'px, 0px,0px)'
+
           else
             contElm.css('left', xCont);
 
