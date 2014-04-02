@@ -106,7 +106,7 @@
             enableRun = true;
             has3d = browserHelper.has3d();
             scope.$watch('snappedItemId', function(newId, oldId) {
-              if ((newId != null) && newId < items.length) {
+              if (angular.isNumber(newId) && newId >= 0 && newId < items.length) {
                 setSnappedItem(items[newId].elm);
                 xCont = -itemWidth * newId;
                 calcContentWidth();
