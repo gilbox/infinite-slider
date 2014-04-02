@@ -5,7 +5,7 @@
   <title>AngularJS Infinite Slider</title>
   <link rel="stylesheet" href="stylesheet.css"/>
 </head>
-<body>
+<body ng-controller="appCtrl">
 
   <header>
     <h1>Infinite Slider for AngularJS</h1>
@@ -16,7 +16,7 @@
         based on the sum of the widths of the children of the content div. In this case
         it is summing the widths of all the <a..> tags -->
   <div infinite-slider-boundary class="infinite-slider-boundary">
-    <div infinite-slider classify-closest="true" snap="true" class="infinite-slider-container">
+    <div infinite-slider classify-closest="true" snap="true" snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
       <div class="infinite-slider-content">
 
         <a href="http://flic.kr/p/69489U">
@@ -63,6 +63,8 @@
       </div>
     </div>
   </div>
+
+  snappedItemId: <input type="text" ng-model="listData.snappedItemId"/>
 
   <blockquote>
 

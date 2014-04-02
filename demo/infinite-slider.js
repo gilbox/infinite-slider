@@ -70,7 +70,9 @@
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
           restrict: 'A',
-          scope: {},
+          scope: {
+            snappedItemId: '='
+          },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
             var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
@@ -102,6 +104,9 @@
             lastItem = null;
             itemWidth = 0;
             has3d = browserHelper.has3d();
+            scope.$watch('snappedItemId', function(oldV, newV) {
+              return console.log("-->oldV, newV", oldV, newV);
+            });
             setAllowClick = function(v) {
               allowClick = v;
               return element.toggleClass('allow-click', !v);
@@ -202,6 +207,7 @@
                   if (allowClick && Math.abs(v) < 2) {
                     if (newSnappedItemId !== scope.snappedItemId) {
                       setSnappedItem(newSnappedItem);
+                      scope.$apply();
                     }
                     if (xCont !== snapTargetX) {
                       xCont += (snapTargetX - xCont) * spring;
@@ -265,8 +271,8 @@
                   item.prevItem = items[i - 1];
                 }
                 item.x = contentWidth;
-                item.idx = i;
                 item.elm = items.eq(i);
+                item.idx = item.elm.idx = i;
                 positionItem(item);
                 contentWidth += item.clientWidth;
               }

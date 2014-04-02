@@ -60,7 +60,9 @@
 
     .directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
       restrict: 'A'
-      scope: {}
+      scope: {
+        snappedItemId: '='
+      }
       require: '^infiniteSliderBoundary'
       link: (scope, element, attrs, boundaryCtrl) ->
         a = attrs.acceleration || 1.05         # "acceleration"  > 1
@@ -94,6 +96,9 @@
 
         has3d = browserHelper.has3d()
         
+        scope.$watch 'snappedItemId', (oldV, newV) ->
+          console.log "-->oldV, newV", oldV, newV
+
         setAllowClick = (v) ->
           allowClick = v
           element.toggleClass 'allow-click', !v
@@ -181,6 +186,7 @@
               if allowClick && Math.abs(v) < 2
                 if newSnappedItemId != scope.snappedItemId
                   setSnappedItem newSnappedItem
+                  scope.$apply()
 
                 if xCont != snapTargetX
                   xCont += (snapTargetX-xCont)*spring
@@ -235,8 +241,8 @@
             if item is firstItem then item.prevItem = lastItem else item.prevItem = items[i-1]
 
             item.x = contentWidth
-            item.idx = i
             item.elm = items.eq(i)
+            item.idx = item.elm.idx = i
             positionItem(item)
             contentWidth += item.clientWidth
 
