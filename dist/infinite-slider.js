@@ -278,7 +278,6 @@
               calcContentWidth();
               return rearrange();
             };
-            onWinResize();
             boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
               if (deltaX) {
                 event.preventDefault();
@@ -295,6 +294,7 @@
                 }
               }
             });
+            onWinResize();
             if (snap) {
               setSnappedItem(items[0].elm);
             }

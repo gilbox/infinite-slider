@@ -71,7 +71,6 @@
         snap = attrs.snap && attrs.snap != 'false'
         classifyClosest = attrs.classifyClosest && attrs.classifyClosest != 'false'
 
-
         v = 0           # "velocity"
         xCont = 0
         naxv = -maxv
@@ -94,7 +93,7 @@
         itemWidth = 0
 
         has3d = browserHelper.has3d()
-
+        
         setAllowClick = (v) ->
           allowClick = v
           element.toggleClass 'allow-click', !v
@@ -153,10 +152,12 @@
           scope.snappedItemId = newSnappedItem.idx
           scope.snappedItemElm = newSnappedItem
 
+
         setClosestItem = (newClosestItem) ->
           scope.closestItem.removeClass 'closest' if scope.closestItem
           newClosestItem.addClass 'closest'
           scope.closestItem = newClosestItem
+
 
         run = ->
           setInterval (->
@@ -249,12 +250,9 @@
           rearrange()
 
           # todo: to prevent snapped item from changing on window resize, we could calculate
-          #       change in position of element and offset xCont accordingliny
+          #       change in position of element and offset xCont accordingliny, although responsive
+          #       layout could still pose a problem
 
-
-        # initialize
-
-        onWinResize()
 
         boundaryCtrl.setWheelFn (event, delta, deltaX, deltaY) ->
           if deltaX
@@ -267,6 +265,9 @@
               v = Math.max(naxv, (v - 2) * a)
 
 
+        # initialize
+
+        onWinResize()
 
         if snap             then setSnappedItem items[0].elm
         if classifyClosest  then setClosestItem items[0].elm
