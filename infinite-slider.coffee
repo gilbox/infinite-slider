@@ -199,9 +199,7 @@
                   else
                     if newSnappedItemId != scope.snappedItemId
                       setSnappedItem newSnappedItem
-                      console.log "applyyyyy"
                       scope.$apply()
-                      v = 0
 
               if v
                 v *= f
