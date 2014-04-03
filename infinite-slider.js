@@ -76,7 +76,7 @@
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, enableRun, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -104,7 +104,7 @@
             firstItem = null;
             lastItem = null;
             itemWidth = 0;
-            enableRun = true;
+            jumping = false;
             has3d = browserHelper.has3d();
             scope.$watch('snappedItemId', function(newId) {
               newId = parseInt(newId);
@@ -197,7 +197,7 @@
             run = function() {
               return setInterval((function() {
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
-                if (enableRun && items) {
+                if (!jumping && items && itemWidth) {
                   xchanged = false;
                   if (v) {
                     v *= f;
@@ -259,13 +259,13 @@
                     '-webkit-transition': '-webkit-transform .5s',
                     'transition': 'transform .5s'
                   });
-                  enableRun = false;
+                  jumping = true;
                   setTimeout(function() {
                     contElm.css({
                       '-webkit-transition': 'none',
                       'transition': 'none'
                     });
-                    return enableRun = true;
+                    return jumping = false;
                   }, 500);
                 }
                 return contElm.css({
@@ -279,16 +279,22 @@
                 return contElm.css('left', xCont + 'px');
               }
             };
+            timeoutId = null;
             calcContentWidth = function() {
               var boundsOffsetX, contentWidth, i, item, lastidx, _i, _len;
               if (!items) {
                 return;
               }
+              clearTimeout(timeoutId);
               contentWidth = 0;
               lastidx = items.length - 1;
               firstItem = items[0];
               lastItem = items[lastidx];
               itemWidth = firstItem.clientWidth;
+              if (!itemWidth) {
+                timeoutId = setTimeout(calcContentWidth, 50);
+                return;
+              }
               for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
                 item = items[i];
                 if (item === lastItem) {

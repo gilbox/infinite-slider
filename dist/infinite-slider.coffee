@@ -93,7 +93,7 @@
         firstItem = null
         lastItem = null
         itemWidth = 0
-        enableRun = true
+        jumping = false
 
         has3d = browserHelper.has3d()
 
@@ -175,7 +175,7 @@
 
         run = ->
           setInterval (->
-            if enableRun && items
+            if !jumping && items && itemWidth
               xchanged = false
 
               if v
@@ -237,14 +237,14 @@
               contElm.css
                 '-webkit-transition': '-webkit-transform .5s'
                 'transition': 'transform .5s'
-              enableRun = false
+              jumping = true
 
               setTimeout ->
                 # todo: calling doTransform(true) before timeout completes could be trouble
                 contElm.css
                   '-webkit-transition': 'none'
                   'transition': 'none'
-                enableRun = true
+                jumping = false
               , 500
 
             contElm.css
@@ -257,14 +257,19 @@
           else
             contElm.css('left', xCont + 'px');
 
-
+        timeoutId = null
         calcContentWidth = ->
           return if !items
+          clearTimeout(timeoutId)
           contentWidth = 0
           lastidx = items.length-1
           firstItem = items[0]
           lastItem = items[lastidx]
           itemWidth = firstItem.clientWidth
+          unless itemWidth
+            timeoutId = setTimeout calcContentWidth, 50
+            return
+
           for item,i in items
             if item is lastItem then item.nextItem = firstItem else item.nextItem = items[i+1]
             if item is firstItem then item.prevItem = lastItem else item.prevItem = items[i-1]
