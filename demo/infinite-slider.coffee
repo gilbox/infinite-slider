@@ -268,7 +268,7 @@
           itemWidth = firstItem.clientWidth
           unless itemWidth
             timeoutId = setTimeout calcContentWidth, 50
-            return
+            return false
 
           for item,i in items
             if item is lastItem then item.nextItem = firstItem else item.nextItem = items[i+1]
@@ -283,20 +283,21 @@
           boundsOffsetX = element[0].clientWidth/2 - itemWidth/2
           xMax = contentWidth/2 + boundsOffsetX
           xMin = boundsOffsetX - contentWidth/2
+          true
 
 
         onWinResize = ->
-          calcContentWidth()
+          if calcContentWidth()
 
-          if items
-            if snap && ! scope.snappedItemElm          then setSnappedItem items[0].elm
-            if classifyClosest && ! scope.closestItem  then setClosestItem items[0].elm
+            if items
+              if snap && ! scope.snappedItemElm          then setSnappedItem items[0].elm
+              if classifyClosest && ! scope.closestItem  then setClosestItem items[0].elm
 
-          rearrange()
+            rearrange()
 
-          # todo: to prevent snapped item from changing on window resize, we could calculate
-          #       change in position of element and offset xCont accordingliny, although responsive
-          #       layout could still pose a problem
+            # todo: to prevent snapped item from changing on window resize, we could calculate
+            #       change in position of element and offset xCont accordingliny, although responsive
+            #       layout could still pose a problem
 
 
         boundaryCtrl.setWheelFn (event, delta, deltaX, deltaY) ->

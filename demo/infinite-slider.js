@@ -293,7 +293,7 @@
               itemWidth = firstItem.clientWidth;
               if (!itemWidth) {
                 timeoutId = setTimeout(calcContentWidth, 50);
-                return;
+                return false;
               }
               for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
                 item = items[i];
@@ -315,19 +315,21 @@
               }
               boundsOffsetX = element[0].clientWidth / 2 - itemWidth / 2;
               xMax = contentWidth / 2 + boundsOffsetX;
-              return xMin = boundsOffsetX - contentWidth / 2;
+              xMin = boundsOffsetX - contentWidth / 2;
+              return true;
             };
             onWinResize = function() {
-              calcContentWidth();
-              if (items) {
-                if (snap && !scope.snappedItemElm) {
-                  setSnappedItem(items[0].elm);
+              if (calcContentWidth()) {
+                if (items) {
+                  if (snap && !scope.snappedItemElm) {
+                    setSnappedItem(items[0].elm);
+                  }
+                  if (classifyClosest && !scope.closestItem) {
+                    setClosestItem(items[0].elm);
+                  }
                 }
-                if (classifyClosest && !scope.closestItem) {
-                  setClosestItem(items[0].elm);
-                }
+                return rearrange();
               }
-              return rearrange();
             };
             boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
               if (deltaX) {
