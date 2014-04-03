@@ -276,7 +276,7 @@
                   'transform': 'translate3d(' + xCont + 'px, 0px,0px)'
                 });
               } else {
-                return contElm.css('left', xCont);
+                return contElm.css('left', xCont + 'px');
               }
             };
             calcContentWidth = function() {

@@ -33,7 +33,6 @@
         has3d isnt `undefined` and has3d.length > 0 and has3d isnt "none")()
 
     getTouchPoint: (event) ->
-      #console.log "-->event", event
       e = switch
         when event.touches?
           event.touches[0]
@@ -256,7 +255,7 @@
               'transform': 'translate3d(' + xCont + 'px, 0px,0px)'
 
           else
-            contElm.css('left', xCont);
+            contElm.css('left', xCont + 'px');
 
 
         calcContentWidth = ->
