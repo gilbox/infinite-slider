@@ -71,6 +71,7 @@
         clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
         maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
         snap = attrs.snap && attrs.snap != 'false'
+        snapVelocityTrigger = attrs.snapVelocityTrigger || 3
         classifyClosest = attrs.classifyClosest && attrs.classifyClosest != 'false'
 
         v = 0           # "velocity"
@@ -193,7 +194,7 @@
                 if classifyClosest && scope.closestItem != newSnappedItem
                   setClosestItem newSnappedItem
 
-                if allowClick && Math.abs(v) < 2
+                if allowClick && Math.abs(v) < snapVelocityTrigger
                   if newSnappedItemId != scope.snappedItemId
                     setSnappedItem newSnappedItem
                     scope.$apply()

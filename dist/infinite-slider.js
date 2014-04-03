@@ -76,13 +76,14 @@
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
             clickFudge = attrs.clickFudge || 2;
             maxv = attrs.maxVelocity || 50;
             snap = attrs.snap && attrs.snap !== 'false';
+            snapVelocityTrigger = attrs.snapVelocityTrigger || 3;
             classifyClosest = attrs.classifyClosest && attrs.classifyClosest !== 'false';
             v = 0;
             xCont = 0;
@@ -214,7 +215,7 @@
                     if (classifyClosest && scope.closestItem !== newSnappedItem) {
                       setClosestItem(newSnappedItem);
                     }
-                    if (allowClick && Math.abs(v) < 2) {
+                    if (allowClick && Math.abs(v) < snapVelocityTrigger) {
                       if (newSnappedItemId !== scope.snappedItemId) {
                         setSnappedItem(newSnappedItem);
                         scope.$apply();
