@@ -79,7 +79,7 @@
             var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
-            spring = attrs.springBack || 0.1;
+            spring = attrs.springBack || 0.3;
             clickFudge = attrs.clickFudge || 2;
             maxv = attrs.maxVelocity || 50;
             snap = attrs.snap && attrs.snap !== 'false';
@@ -200,14 +200,6 @@
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
                 if (!jumping && items && itemWidth) {
                   xchanged = false;
-                  if (v) {
-                    v *= f;
-                    xCont -= v;
-                    if (Math.abs(v) < 0.001) {
-                      v = 0;
-                    }
-                    xchanged = true;
-                  }
                   if (classifyClosest || snap) {
                     snapTargetX = itemWidth * Math.round(xCont / itemWidth);
                     newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
@@ -216,15 +208,30 @@
                       setClosestItem(newSnappedItem);
                     }
                     if (allowClick && Math.abs(v) < snapVelocityTrigger) {
-                      if (newSnappedItemId !== scope.snappedItemId) {
-                        setSnappedItem(newSnappedItem);
-                        scope.$apply();
-                      }
                       if (xCont !== snapTargetX) {
                         xCont += (snapTargetX - xCont) * spring;
+                        if (Math.abs(snapTargetX - xCont) < 1) {
+                          xCont = snapTargetX;
+                        }
                         xchanged = true;
+                        v = 0;
+                      } else {
+                        if (newSnappedItemId !== scope.snappedItemId) {
+                          setSnappedItem(newSnappedItem);
+                          console.log("applyyyyy");
+                          scope.$apply();
+                          v = 0;
+                        }
                       }
                     }
+                  }
+                  if (v) {
+                    v *= f;
+                    xCont -= v;
+                    if (Math.abs(v) < 0.001) {
+                      v = 0;
+                    }
+                    xchanged = true;
                   }
                   if (xchanged) {
                     doTransform();

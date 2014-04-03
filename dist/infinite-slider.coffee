@@ -67,11 +67,11 @@
       link: (scope, element, attrs, boundaryCtrl) ->
         a = attrs.acceleration || 1.05         # "acceleration"  > 1
         f = attrs.friction || 0.95            # "friction" < 1
-        spring = attrs.springBack || 0.1      # spring-back 0..1 1=fastest
+        spring = attrs.springBack || 0.3      # spring-back 0..1 1=fastest
         clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
         maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
         snap = attrs.snap && attrs.snap != 'false'
-        snapVelocityTrigger = attrs.snapVelocityTrigger || 3
+        snapVelocityTrigger = attrs.snapVelocityTrigger || 3  # todo anything above 3 doesn't work well w/mouse wheel
         classifyClosest = attrs.classifyClosest && attrs.classifyClosest != 'false'
 
         v = 0           # "velocity"
@@ -179,11 +179,6 @@
             if !jumping && items && itemWidth
               xchanged = false
 
-              if v
-                v *= f
-                xCont -= v
-                v = 0 if Math.abs(v) < 0.001
-                xchanged = true
 
               if classifyClosest || snap
 
@@ -195,13 +190,24 @@
                   setClosestItem newSnappedItem
 
                 if allowClick && Math.abs(v) < snapVelocityTrigger
-                  if newSnappedItemId != scope.snappedItemId
-                    setSnappedItem newSnappedItem
-                    scope.$apply()
 
                   if xCont != snapTargetX
                     xCont += (snapTargetX-xCont)*spring
+                    xCont = snapTargetX if Math.abs(snapTargetX-xCont)<1
                     xchanged = true
+                    v = 0
+                  else
+                    if newSnappedItemId != scope.snappedItemId
+                      setSnappedItem newSnappedItem
+                      console.log "applyyyyy"
+                      scope.$apply()
+                      v = 0
+
+              if v
+                v *= f
+                xCont -= v
+                v = 0 if Math.abs(v) < 0.001
+                xchanged = true
 
               if xchanged
                 doTransform()
