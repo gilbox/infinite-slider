@@ -71,6 +71,7 @@
         return {
           restrict: 'A',
           scope: {
+            slides: '=?',
             snappedItemId: '='
           },
           require: '^infiniteSliderBoundary',
@@ -89,7 +90,7 @@
             winElm = angular.element($window);
             boundaryElm = (boundaryCtrl && boundaryCtrl.elm) || element;
             contElm = element.children().eq(0);
-            items = contElm.children();
+            items = null;
             endTypes = 'touchend touchcancel mouseup mouseleave';
             moveTypes = 'touchmove mousemove';
             startTypes = 'touchstart mousedown';
@@ -233,6 +234,9 @@
             };
             rearrange = function() {
               var _ref, _ref1;
+              if (!items || !items.length) {
+                return;
+              }
               if (lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51) {
                 lastItem.x = firstItem.x - lastItem.clientWidth;
                 positionItem(lastItem);
@@ -277,6 +281,9 @@
             };
             calcContentWidth = function() {
               var boundsOffsetX, contentWidth, i, item, lastidx, _i, _len;
+              if (!items || !items.length) {
+                return;
+              }
               contentWidth = 0;
               lastidx = items.length - 1;
               firstItem = items[0];
@@ -306,6 +313,14 @@
             };
             onWinResize = function() {
               calcContentWidth();
+              if ((items != null) && items.length) {
+                if (snap && !scope.snappedItemElm) {
+                  setSnappedItem(items[0].elm);
+                }
+                if (classifyClosest && !scope.closestItem) {
+                  setClosestItem(items[0].elm);
+                }
+              }
               return rearrange();
             };
             boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
@@ -324,13 +339,13 @@
                 }
               }
             });
+            if (scope.slides) {
+              scope.$watch('slides', function() {
+                items = contElm.children();
+                return onWinResize();
+              });
+            }
             onWinResize();
-            if (snap) {
-              setSnappedItem(items[0].elm);
-            }
-            if (classifyClosest) {
-              setClosestItem(items[0].elm);
-            }
             run();
             return winElm.on('resize', onWinResize);
           }
@@ -340,3 +355,7 @@
   })();
 
 }).call(this);
+
+/*
+//# sourceMappingURL=infinite-slider.js.map
+*/

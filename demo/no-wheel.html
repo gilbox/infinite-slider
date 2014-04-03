@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <title>AngularJS Infinite Slider</title>
+  <link rel="stylesheet" href="stylesheet.css"/>
+</head>
+<body ng-controller="appCtrl">
+
+<header>
+  <h1>Infinite Slider for AngularJS</h1>
+  <p>by <a href="http://gilbox.me">Gil Birman</a></p>
+</header>
+
+<!-- If you don't specify the content-width attribute, it will be calculated automatically
+      based on the sum of the widths of the children of the content div. In this case
+      it is summing the widths of all the <a..> tags -->
+<div infinite-slider-boundary class="infinite-slider-boundary">
+  <div infinite-slider classify-closest="true" slides="listData.items" snap="true" snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
+    <div class="infinite-slider-content">
+
+      <a href="{{item.link}}" ng-repeat="item in listData.items">
+        <img ng-src="{{item.img}}" alt=""/>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+snappedItemId: <input type="text" ng-model="listData.snappedItemId"/><br/>
+url: <a href="{{listData.items[listData.snappedItemId].link}}">{{listData.items[listData.snappedItemId].link}}</a>
+
+<blockquote>
+
+  This demo shows how to use infinite-scroller without mousewheel support, so that there are no external dependencies.
+  Just add the following JavaScript before loading infinite-slider.js:
+
+  <blockquote><code> angular.module('monospaced.mousewheel', []); </code> </blockquote>
+</blockquote>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
+<script>
+  angular.module('monospaced.mousewheel', []);
+</script>
+<script src="infinite-slider.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

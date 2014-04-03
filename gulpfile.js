@@ -4,7 +4,11 @@ var coffee = require('gulp-coffee');
 
 gulp.task('coffee', function() {
 	gulp.src('./*.coffee')
-		.pipe(coffee().on('error', gutil.log))
+    .pipe(gulp.dest('./demo/'))
+    .pipe(gulp.dest('./dist/'))
+		.pipe(coffee({
+      sourceMap: true
+    }).on('error', gutil.log))
 		.pipe(gulp.dest('./demo/'))
 		.pipe(gulp.dest('./dist/'))
 		.pipe(gulp.dest('./'))
@@ -19,7 +23,9 @@ gulp.task('vendor', function () {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['./*.coffee'], ['default']);
+  gulp.watch(['./*.coffee'], ['all']);
 });
 
-gulp.task('default', ['coffee', 'vendor'])
+gulp.task('all', ['coffee', 'vendor']);
+
+gulp.task('default', ['all', 'watch']);

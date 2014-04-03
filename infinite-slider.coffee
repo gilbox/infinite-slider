@@ -61,6 +61,7 @@
     .directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
       restrict: 'A'
       scope: {
+        slides: '=?',
         snappedItemId: '='
       }
       require: '^infiniteSliderBoundary'
@@ -79,7 +80,7 @@
         winElm = angular.element($window)
         boundaryElm = (boundaryCtrl && boundaryCtrl.elm) || element;
         contElm = element.children().eq(0)
-        items = contElm.children()
+        items = null
         endTypes = 'touchend touchcancel mouseup mouseleave'
         moveTypes = 'touchmove mousemove'
         startTypes = 'touchstart mousedown'
@@ -211,6 +212,7 @@
 
         # endless loop rearrange
         rearrange = ->
+          return if !items || !items.length
           if lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51
             lastItem.x = firstItem.x - lastItem.clientWidth
             positionItem lastItem
@@ -258,6 +260,7 @@
 
 
         calcContentWidth = ->
+          return if !items || !items.length
           contentWidth = 0
           lastidx = items.length-1
           firstItem = items[0]
@@ -280,6 +283,11 @@
 
         onWinResize = ->
           calcContentWidth()
+
+          if items? and items.length
+            if snap && ! scope.snappedItemElm          then setSnappedItem items[0].elm
+            if classifyClosest && ! scope.closestItem  then setClosestItem items[0].elm
+
           rearrange()
 
           # todo: to prevent snapped item from changing on window resize, we could calculate
@@ -298,12 +306,15 @@
               v = Math.max(naxv, (v - 2) * a)
 
 
+        if scope.slides
+          scope.$watch 'slides', ->
+            items = contElm.children()
+            onWinResize()
+
         # initialize
 
         onWinResize()
 
-        if snap             then setSnappedItem items[0].elm
-        if classifyClosest  then setClosestItem items[0].elm
 
         run()
         winElm.on 'resize', onWinResize
