@@ -12,14 +12,12 @@
   <p>by <a href="http://gilbox.me">Gil Birman</a></p>
 </header>
 
-<!-- If you don't specify the content-width attribute, it will be calculated automatically
-      based on the sum of the widths of the children of the content div. In this case
-      it is summing the widths of all the <a..> tags -->
+
 <div infinite-slider-boundary class="infinite-slider-boundary">
   <div infinite-slider classify-closest="true" slides="listData.items" snap="true" snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
     <div class="infinite-slider-content">
 
-      <a href="{{item.link}}" ng-repeat="item in listData.items">
+      <a href="{{item.link}}" ng-repeat="item in listData.items track by $index">
         <img ng-src="{{item.img}}" alt=""/>
       </a>
 
@@ -41,6 +39,7 @@ url: <a href="{{listData.items[listData.snappedItemId].link}}">{{listData.items[
 
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
 <script>
+  // this removes the mousewheel dependencies and disables mousewheel
   angular.module('monospaced.mousewheel', []);
 </script>
 <script src="infinite-slider.js"></script>

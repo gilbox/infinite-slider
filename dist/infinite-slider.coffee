@@ -176,7 +176,7 @@
 
         run = ->
           setInterval (->
-            if enableRun
+            if enableRun && items
               xchanged = false
 
               if v
@@ -212,7 +212,7 @@
 
         # endless loop rearrange
         rearrange = ->
-          return if !items || !items.length
+          return if !items
           if lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51
             lastItem.x = firstItem.x - lastItem.clientWidth
             positionItem lastItem
@@ -260,7 +260,7 @@
 
 
         calcContentWidth = ->
-          return if !items || !items.length
+          return if !items
           contentWidth = 0
           lastidx = items.length-1
           firstItem = items[0]
@@ -284,7 +284,7 @@
         onWinResize = ->
           calcContentWidth()
 
-          if items? and items.length
+          if items
             if snap && ! scope.snappedItemElm          then setSnappedItem items[0].elm
             if classifyClosest && ! scope.closestItem  then setClosestItem items[0].elm
 
@@ -306,15 +306,20 @@
               v = Math.max(naxv, (v - 2) * a)
 
 
+        readItems = ->
+          items = contElm.children()
+          items =  null if !items? || !items.length
+
+
         if scope.slides
           scope.$watch 'slides', ->
-            items = contElm.children()
+            readItems()
             onWinResize()
 
         # initialize
 
+        readItems()
         onWinResize()
-
 
         run()
         winElm.on 'resize', onWinResize

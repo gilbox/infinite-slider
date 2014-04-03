@@ -25,6 +25,8 @@ app.controller('appCtrl', function($scope) {
     }
   ];
 
+  imgs = imgs.concat(imgs);
+
   $scope.listData = {
     items: imgs
   };

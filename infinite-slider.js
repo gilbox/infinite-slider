@@ -76,7 +76,7 @@
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, enableRun, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, enableRun, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, spring, startTypes, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.1;
@@ -197,7 +197,7 @@
             run = function() {
               return setInterval((function() {
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
-                if (enableRun) {
+                if (enableRun && items) {
                   xchanged = false;
                   if (v) {
                     v *= f;
@@ -234,7 +234,7 @@
             };
             rearrange = function() {
               var _ref, _ref1;
-              if (!items || !items.length) {
+              if (!items) {
                 return;
               }
               if (lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51) {
@@ -281,7 +281,7 @@
             };
             calcContentWidth = function() {
               var boundsOffsetX, contentWidth, i, item, lastidx, _i, _len;
-              if (!items || !items.length) {
+              if (!items) {
                 return;
               }
               contentWidth = 0;
@@ -313,7 +313,7 @@
             };
             onWinResize = function() {
               calcContentWidth();
-              if ((items != null) && items.length) {
+              if (items) {
                 if (snap && !scope.snappedItemElm) {
                   setSnappedItem(items[0].elm);
                 }
@@ -339,12 +339,19 @@
                 }
               }
             });
+            readItems = function() {
+              items = contElm.children();
+              if ((items == null) || !items.length) {
+                return items = null;
+              }
+            };
             if (scope.slides) {
               scope.$watch('slides', function() {
-                items = contElm.children();
+                readItems();
                 return onWinResize();
               });
             }
+            readItems();
             onWinResize();
             run();
             return winElm.on('resize', onWinResize);
