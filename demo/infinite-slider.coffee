@@ -277,7 +277,7 @@
           lastItem = items[lastidx]
           itemWidth = firstItem.clientWidth
           unless itemWidth
-            timeoutId = setTimeout calcContentWidth, 50
+            timeoutId = setTimeout calcContentWidth, 200  # todo: a better way? seems hacky
             return false
 
           for item,i in items
@@ -325,11 +325,9 @@
           items = contElm.children()
           items =  null if !items? || !items.length
 
-
-        if scope.slides
-          scope.$watch 'slides', ->
-            readItems()
-            onWinResize()
+        scope.$watch 'slides', ->
+          readItems()
+          onWinResize()
 
         # initialize
 

@@ -309,7 +309,7 @@
               lastItem = items[lastidx];
               itemWidth = firstItem.clientWidth;
               if (!itemWidth) {
-                timeoutId = setTimeout(calcContentWidth, 50);
+                timeoutId = setTimeout(calcContentWidth, 200);
                 return false;
               }
               for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
@@ -370,12 +370,10 @@
                 return items = null;
               }
             };
-            if (scope.slides) {
-              scope.$watch('slides', function() {
-                readItems();
-                return onWinResize();
-              });
-            }
+            scope.$watch('slides', function() {
+              readItems();
+              return onWinResize();
+            });
             readItems();
             onWinResize();
             run();
