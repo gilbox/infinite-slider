@@ -5,9 +5,6 @@ html, body {
 header {
   padding: 0 0 0 20px; }
 
-a {
-  pointer-events: none; }
-
 .infinite-slider-boundary {
   width: 100%;
   overflow: hidden;
@@ -31,7 +28,7 @@ a {
   position: absolute;
   z-index: 1;
   width: 100%; }
-  .infinite-slider-content a {
+  .infinite-slider-content .slide {
     position: absolute;
     display: block;
     top: 0;
@@ -47,26 +44,26 @@ a {
     -webkit-transition: opacity 2s, border 0.5s, -webkit-transform .5s;
     border: 10px solid transparent;
     border-radius: 200px; }
-    .allow-click .infinite-slider-content a {
+    .allow-click .infinite-slider-content .slide {
       opacity: .5;
       transition: opacity .5s, border 0.5s, transform .5s;
       -webkit-transition: opacity .5ss, border 0.5s, -webkit-transform .5s; }
-    .infinite-slider-content a.closest {
+    .infinite-slider-content .slide.closest {
       opacity: 1;
       transition: opacity .5s, border 0.5s, transform .5s;
       -webkit-transition: opacity .5s, border 0.5s, -webkit-transform .5s;
       -moz-transform: scale(1);
       -webkit-transform: scale(1);
       transform: scale(1); }
-    .infinite-slider-content a.snapped {
+    .infinite-slider-content .slide.snapped {
       border: 10px solid rgba(255, 0, 0, 0.5); }
-    .infinite-slider-content a img {
+    .infinite-slider-content .slide img {
       height: 100%; }
     @media all and (max-width: 1000px) {
-      .infinite-slider-content a {
+      .infinite-slider-content .slide {
         width: 300px;
         height: 300px; } }
     @media all and (max-width: 600px) {
-      .infinite-slider-content a {
+      .infinite-slider-content .slide {
         width: 200px;
         height: 200px; } }

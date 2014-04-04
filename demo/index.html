@@ -19,9 +19,9 @@
     <div infinite-slider snap classify-closest classify-snapped snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
       <div class="infinite-slider-content">
 
-        <a href="{{item.link}}" ng-repeat="item in listData.items track by $index">
+        <div class="slide" ng-repeat="item in listData.items track by $index">
           <img ng-src="{{item.img}}" alt=""/>
-        </a>
+        </div>
 
       </div>
     </div>

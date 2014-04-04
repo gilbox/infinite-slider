@@ -7,10 +7,6 @@ header {
   padding: 0 0 0 20px;
 }
 
-a {
-  pointer-events: none;
-}
-
 .infinite-slider-boundary {
   width: 100%;
   overflow: hidden;
@@ -40,7 +36,7 @@ a {
   z-index: 1;         // note: make sure you set a z-index
   width: 100%;
 
-  a {
+  .slide {
     position: absolute;
     display: block;
     top: 0;
@@ -77,6 +73,7 @@ a {
       -webkit-transform: scale(1);
       transform: scale(1);
     }
+
     &.snapped {
       border: 10px solid rgba(255,0,0,0.5);
     }
