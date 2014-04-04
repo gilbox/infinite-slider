@@ -55,6 +55,7 @@
       return {
         restrict: 'AE',
         transclude: true,
+        replace: true,
         template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
         controller: [
           '$scope', '$element', function($scope, $element) {

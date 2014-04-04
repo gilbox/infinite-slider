@@ -50,6 +50,7 @@
     .directive 'infiniteSliderBoundary', ->
       restrict: 'AE'
       transclude: true
+      replace: true
       template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
       controller: ['$scope', '$element', ($scope, $element) ->
         @elm = $element
