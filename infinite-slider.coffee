@@ -102,22 +102,13 @@
 
         has3d = browserHelper.has3d()
 
-        scope.$watch 'snappedItemId', (newId) ->
-          newId = parseInt(newId)
-          # the second condition determines if the id was changed internally,
-          # because if it was then we don't need to do this stuff
-          if 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
-            setSnappedItem items[newId].elm
-            xCont = -itemWidth * newId
-            calcContentWidth()
-            rearrange()
-            doTransform(true)
 
         setAllowClick = (v) ->
           allowClick = v
           element.toggleClass 'allow-click', !v
 
         setAllowClick true
+
 
         $document.bind endTypes, (event) -> # drag end
           unless (allowClick)
@@ -241,6 +232,7 @@
 
         # use css transition (transition==true) for a smooth animation
         # when jumping to a new snapped-item-id
+        transform_toid = null
         doTransform = (transition)->
           if has3d
             if transition
@@ -249,8 +241,8 @@
                 'transition': 'transform .5s'
               jumping = true
 
-              setTimeout ->
-                # todo: calling doTransform(true) before timeout completes could be trouble
+              clearTimeout(transform_toid)
+              transform_toid = setTimeout ->
                 contElm.css
                   '-webkit-transition': 'none'
                   'transition': 'none'
@@ -267,17 +259,18 @@
           else
             contElm.css('left', xCont + 'px');
 
-        timeoutId = null
+
+        calc_toid = null
         calcContentWidth = ->
           return if !items
-          clearTimeout(timeoutId)
           contentWidth = 0
           lastidx = items.length-1
           firstItem = items[0]
           lastItem = items[lastidx]
           itemWidth = firstItem.clientWidth
           unless itemWidth
-            timeoutId = setTimeout calcContentWidth, 200  # todo: a better way? seems hacky
+            clearTimeout(calc_toid)
+            calc_toid = setTimeout calcContentWidth, 200  # todo: a better way? seems hacky
             return false
 
           for item,i in items
@@ -325,9 +318,23 @@
           items = contElm.children()
           items =  null if !items? || !items.length
 
+
         scope.$watch 'slides', ->
           readItems()
           onWinResize()
+
+
+        scope.$watch 'snappedItemId', (newId) ->
+          newId = parseInt(newId)
+          # the second condition determines if the id was changed internally,
+          # because if it was then we don't need to do this stuff
+          if 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
+            setSnappedItem items[newId].elm
+            xCont = -itemWidth * newId
+            calcContentWidth()
+            rearrange()
+            doTransform(true)
+
 
         # initialize
 

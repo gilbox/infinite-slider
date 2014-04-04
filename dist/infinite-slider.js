@@ -77,7 +77,7 @@
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, calc_toid, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, transform_toid, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
@@ -111,16 +111,6 @@
             snappedItemId = scope.snappedItemId;
             snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
             has3d = browserHelper.has3d();
-            scope.$watch('snappedItemId', function(newId) {
-              newId = parseInt(newId);
-              if ((0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
-                setSnappedItem(items[newId].elm);
-                xCont = -itemWidth * newId;
-                calcContentWidth();
-                rearrange();
-                return doTransform(true);
-              }
-            });
             setAllowClick = function(v) {
               allowClick = v;
               return element.toggleClass('allow-click', !v);
@@ -269,6 +259,7 @@
             positionItem = function(item) {
               return item.style.left = item.x + 'px';
             };
+            transform_toid = null;
             doTransform = function(transition) {
               if (has3d) {
                 if (transition) {
@@ -277,7 +268,8 @@
                     'transition': 'transform .5s'
                   });
                   jumping = true;
-                  setTimeout(function() {
+                  clearTimeout(transform_toid);
+                  transform_toid = setTimeout(function() {
                     contElm.css({
                       '-webkit-transition': 'none',
                       'transition': 'none'
@@ -296,20 +288,20 @@
                 return contElm.css('left', xCont + 'px');
               }
             };
-            timeoutId = null;
+            calc_toid = null;
             calcContentWidth = function() {
               var boundsOffsetX, contentWidth, i, item, lastidx, _i, _len;
               if (!items) {
                 return;
               }
-              clearTimeout(timeoutId);
               contentWidth = 0;
               lastidx = items.length - 1;
               firstItem = items[0];
               lastItem = items[lastidx];
               itemWidth = firstItem.clientWidth;
               if (!itemWidth) {
-                timeoutId = setTimeout(calcContentWidth, 200);
+                clearTimeout(calc_toid);
+                calc_toid = setTimeout(calcContentWidth, 200);
                 return false;
               }
               for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
@@ -373,6 +365,16 @@
             scope.$watch('slides', function() {
               readItems();
               return onWinResize();
+            });
+            scope.$watch('snappedItemId', function(newId) {
+              newId = parseInt(newId);
+              if ((0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
+                setSnappedItem(items[newId].elm);
+                xCont = -itemWidth * newId;
+                calcContentWidth();
+                rearrange();
+                return doTransform(true);
+              }
             });
             readItems();
             onWinResize();
