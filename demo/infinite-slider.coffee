@@ -62,7 +62,7 @@
       restrict: 'A'
       scope: {
         slides: '=?',
-        snappedItemId: '='
+        snappedItemId: '=?'
       }
       require: '^infiniteSliderBoundary'
       link: (scope, element, attrs, boundaryCtrl) ->
@@ -71,9 +71,10 @@
         spring = attrs.springBack || 0.3      # spring-back 0..1 1=fastest
         clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
         maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
-        snap = attrs.snap && attrs.snap != 'false'
+        snap = attrs.hasOwnProperty('snap') && attrs.snap != 'false'
         snapVelocityTrigger = attrs.snapVelocityTrigger || 3  # todo anything above 3 doesn't work well w/mouse wheel
-        classifyClosest = attrs.classifyClosest && attrs.classifyClosest != 'false'
+        classifyClosest = attrs.hasOwnProperty('classifyClosest') && attrs.classifyClosest != 'false'
+        classifySnapped = attrs.hasOwnProperty('classifySnapped') && attrs.classifySnapped != 'false'
 
         v = 0           # "velocity"
         xCont = 0
@@ -96,6 +97,8 @@
         lastItem = null
         itemWidth = 0
         jumping = false
+        snappedItemId = scope.snappedItemId # we'll keep track of snapped item id even if an attribute isn't present
+        snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
 
         has3d = browserHelper.has3d()
 
@@ -163,10 +166,11 @@
 
 
         setSnappedItem = (newSnappedItem) ->
-          scope.snappedItemElm.removeClass 'snapped' if scope.snappedItemElm
-          newSnappedItem.addClass 'snapped'
+          scope.snappedItemElm.removeClass 'snapped' if scope.snappedItemElm and classifySnapped
+          newSnappedItem.addClass 'snapped' if classifySnapped
           scope.snappedItemElm = newSnappedItem
-          scope.snappedItemId = newSnappedItem.idx
+          snappedItemId = newSnappedItem.idx
+          scope.snappedItemId = snappedItemId if snappedItemId_isBound
 
 
         setClosestItem = (newClosestItem) ->
@@ -198,9 +202,9 @@
                     xchanged = true
                     v = 0
                   else
-                    if newSnappedItemId != scope.snappedItemId
+                    if newSnappedItemId != snappedItemId
                       setSnappedItem newSnappedItem
-                      scope.$apply()
+                      scope.$apply() if snappedItemId_isBound
 
               if v
                 v *= f

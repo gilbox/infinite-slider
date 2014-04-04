@@ -73,19 +73,20 @@
           restrict: 'A',
           scope: {
             slides: '=?',
-            snappedItemId: '='
+            snappedItemId: '=?'
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, timeoutId, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
             clickFudge = attrs.clickFudge || 2;
             maxv = attrs.maxVelocity || 50;
-            snap = attrs.snap && attrs.snap !== 'false';
+            snap = attrs.hasOwnProperty('snap') && attrs.snap !== 'false';
             snapVelocityTrigger = attrs.snapVelocityTrigger || 3;
-            classifyClosest = attrs.classifyClosest && attrs.classifyClosest !== 'false';
+            classifyClosest = attrs.hasOwnProperty('classifyClosest') && attrs.classifyClosest !== 'false';
+            classifySnapped = attrs.hasOwnProperty('classifySnapped') && attrs.classifySnapped !== 'false';
             v = 0;
             xCont = 0;
             naxv = -maxv;
@@ -107,6 +108,8 @@
             lastItem = null;
             itemWidth = 0;
             jumping = false;
+            snappedItemId = scope.snappedItemId;
+            snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
             has3d = browserHelper.has3d();
             scope.$watch('snappedItemId', function(newId) {
               newId = parseInt(newId);
@@ -182,12 +185,17 @@
               return allowClick;
             });
             setSnappedItem = function(newSnappedItem) {
-              if (scope.snappedItemElm) {
+              if (scope.snappedItemElm && classifySnapped) {
                 scope.snappedItemElm.removeClass('snapped');
               }
-              newSnappedItem.addClass('snapped');
+              if (classifySnapped) {
+                newSnappedItem.addClass('snapped');
+              }
               scope.snappedItemElm = newSnappedItem;
-              return scope.snappedItemId = newSnappedItem.idx;
+              snappedItemId = newSnappedItem.idx;
+              if (snappedItemId_isBound) {
+                return scope.snappedItemId = snappedItemId;
+              }
             };
             setClosestItem = function(newClosestItem) {
               if (scope.closestItem) {
@@ -217,9 +225,11 @@
                         xchanged = true;
                         v = 0;
                       } else {
-                        if (newSnappedItemId !== scope.snappedItemId) {
+                        if (newSnappedItemId !== snappedItemId) {
                           setSnappedItem(newSnappedItem);
-                          scope.$apply();
+                          if (snappedItemId_isBound) {
+                            scope.$apply();
+                          }
                         }
                       }
                     }
