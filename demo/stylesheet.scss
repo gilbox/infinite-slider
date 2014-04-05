@@ -12,13 +12,10 @@ header {
   overflow: hidden;
 }
 .infinite-slider-container {
-
   position: relaive;
-  width: 320px;
   margin: auto;
   z-index: 1;
   overflow: visible;
-
 }
 
 .infinite-slider-container,
@@ -29,6 +26,16 @@ header {
   }
   @media all and (max-width: 600px) {
     height: 220px;
+  }
+
+}
+.infinite-slider-container {
+  width: 410px;
+  @media all and (max-width: 1000px) {
+    width: 320px;
+  }
+  @media all and (max-width: 600px) {
+    width: 220px;
   }
 
 }
