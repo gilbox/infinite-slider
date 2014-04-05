@@ -10,22 +10,25 @@ header {
 .infinite-slider-boundary {
   width: 100%;
   overflow: hidden;
-  height: 350px;
 }
 .infinite-slider-container {
 
   position: relative;
   width: 320px;
-  height: 400px;
   margin: auto;
   z-index: 1;
   overflow: visible;
 
+}
+
+.infinite-slider-container,
+.infinite-slider-boundary, {
+  height: 410px;
   @media all and (max-width: 1000px) {
-    height: 310px;
+    height: 320px;
   }
   @media all and (max-width: 600px) {
-    height: 210px;
+    height: 220px;
   }
 
 }

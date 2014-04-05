@@ -7,22 +7,26 @@ header {
 
 .infinite-slider-boundary {
   width: 100%;
-  overflow: hidden;
-  height: 350px; }
+  overflow: hidden; }
 
 .infinite-slider-container {
   position: relative;
   width: 320px;
-  height: 400px;
   margin: auto;
   z-index: 1;
   overflow: visible; }
+
+.infinite-slider-container,
+.infinite-slider-boundary {
+  height: 410px; }
   @media all and (max-width: 1000px) {
-    .infinite-slider-container {
-      height: 310px; } }
+    .infinite-slider-container,
+    .infinite-slider-boundary {
+      height: 320px; } }
   @media all and (max-width: 600px) {
-    .infinite-slider-container {
-      height: 210px; } }
+    .infinite-slider-container,
+    .infinite-slider-boundary {
+      height: 220px; } }
 
 .infinite-slider-content {
   position: absolute;
