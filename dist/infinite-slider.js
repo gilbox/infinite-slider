@@ -355,7 +355,7 @@
                   notWheeling = false;
                   return setTimeoutWithId((function() {
                     return notWheeling = true;
-                  }), 500, 0);
+                  }), 200, 0);
                 } else {
                   if (v > -1) {
                     v = -1;
@@ -364,7 +364,7 @@
                   notWheeling = false;
                   return setTimeoutWithId((function() {
                     return notWheeling = true;
-                  }), 500, 0);
+                  }), 200, 0);
                 }
               }
             });
