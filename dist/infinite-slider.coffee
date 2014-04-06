@@ -49,6 +49,7 @@
     # must be a parent of the infinite-slider element.
     .directive 'infiniteSliderBoundary', ->
       restrict: 'AE'
+      scope: {} # necessary to isolate msd-wheel scope with multiple sliders
       transclude: true
       replace: true
       template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'

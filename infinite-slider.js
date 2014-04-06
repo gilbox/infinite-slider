@@ -54,6 +54,7 @@
     return angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive('infiniteSliderBoundary', function() {
       return {
         restrict: 'AE',
+        scope: {},
         transclude: true,
         replace: true,
         template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
