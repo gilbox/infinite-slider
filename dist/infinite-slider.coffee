@@ -56,7 +56,7 @@
       controller: ['$scope', '$element', ($scope, $element) ->
         @elm = $element
         @setWheelFn = (fn) -> $scope.wheel = fn
-        @
+        @ # why is this necessary?
       ]
 
     .directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
@@ -100,8 +100,15 @@
         jumping = false
         snappedItemId = scope.snappedItemId # we'll keep track of snapped item id even if an attribute isn't present
         snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
+        notWheeling = true
 
         has3d = browserHelper.has3d()
+
+
+        toIds = {}
+        setTimeoutWithId = (fn, ms, id) ->
+          clearTimeout toIds[id]
+          toIds[id] = setTimeout fn, ms
 
 
         setAllowClick = (v) ->
@@ -177,7 +184,7 @@
               xchanged = false
 
 
-              if classifyClosest || snap
+              if (classifyClosest || snap) && notWheeling
 
                 snapTargetX = itemWidth * Math.round(xCont / itemWidth)
                 newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) % items.length
@@ -233,7 +240,6 @@
 
         # use css transition (transition==true) for a smooth animation
         # when jumping to a new snapped-item-id
-        transform_toid = null
         doTransform = (transition)->
           if has3d
             if transition
@@ -243,12 +249,12 @@
               jumping = true
 
               clearTimeout(transform_toid)
-              transform_toid = setTimeout ->
+              setTimeoutWithId ->
                 contElm.css
                   '-webkit-transition': 'none'
                   'transition': 'none'
                 jumping = false
-              , 500
+              , 500, 1
 
             contElm.css
               '-webkit-transform': 'translate3d(' + xCont + 'px, 0px, 0px)'
@@ -261,7 +267,6 @@
             contElm.css('left', xCont + 'px');
 
 
-        calc_toid = null
         calcContentWidth = ->
           return if !items
           contentWidth = 0
@@ -270,8 +275,7 @@
           lastItem = items[lastidx]
           itemWidth = firstItem.clientWidth
           unless itemWidth
-            clearTimeout(calc_toid)
-            calc_toid = setTimeout calcContentWidth, 200  # todo: a better way? seems hacky
+            setTimeoutWithId calcContentWidth, 200, 2  # todo: a better way? seems hacky
             return false
 
           for item,i in items
@@ -310,9 +314,13 @@
             if deltaX > 0
               v = 1  if v < 1
               v = Math.min(maxv, (v + 2) * a)
+              notWheeling = false
+              setTimeoutWithId (-> notWheeling = true), 500, 0
             else
               v = -1  if v > -1
               v = Math.max(naxv, (v - 2) * a)
+              notWheeling = false
+              setTimeoutWithId (-> notWheeling = true), 500, 0
 
 
         readItems = ->

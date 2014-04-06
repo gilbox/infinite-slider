@@ -78,7 +78,7 @@
           },
           require: '^infiniteSliderBoundary',
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, calc_toid, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, transform_toid, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
@@ -111,7 +111,13 @@
             jumping = false;
             snappedItemId = scope.snappedItemId;
             snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
+            notWheeling = true;
             has3d = browserHelper.has3d();
+            toIds = {};
+            setTimeoutWithId = function(fn, ms, id) {
+              clearTimeout(toIds[id]);
+              return toIds[id] = setTimeout(fn, ms);
+            };
             setAllowClick = function(v) {
               allowClick = v;
               return element.toggleClass('allow-click', !v);
@@ -200,7 +206,7 @@
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
                 if (!jumping && items && itemWidth) {
                   xchanged = false;
-                  if (classifyClosest || snap) {
+                  if ((classifyClosest || snap) && notWheeling) {
                     snapTargetX = itemWidth * Math.round(xCont / itemWidth);
                     newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
                     newSnappedItem = items[newSnappedItemId].elm;
@@ -260,7 +266,6 @@
             positionItem = function(item) {
               return item.style.left = item.x + 'px';
             };
-            transform_toid = null;
             doTransform = function(transition) {
               if (has3d) {
                 if (transition) {
@@ -270,13 +275,13 @@
                   });
                   jumping = true;
                   clearTimeout(transform_toid);
-                  transform_toid = setTimeout(function() {
+                  setTimeoutWithId(function() {
                     contElm.css({
                       '-webkit-transition': 'none',
                       'transition': 'none'
                     });
                     return jumping = false;
-                  }, 500);
+                  }, 500, 1);
                 }
                 return contElm.css({
                   '-webkit-transform': 'translate3d(' + xCont + 'px, 0px, 0px)',
@@ -289,7 +294,6 @@
                 return contElm.css('left', xCont + 'px');
               }
             };
-            calc_toid = null;
             calcContentWidth = function() {
               var boundsOffsetX, contentWidth, i, item, lastidx, _i, _len;
               if (!items) {
@@ -301,8 +305,7 @@
               lastItem = items[lastidx];
               itemWidth = firstItem.clientWidth;
               if (!itemWidth) {
-                clearTimeout(calc_toid);
-                calc_toid = setTimeout(calcContentWidth, 200);
+                setTimeoutWithId(calcContentWidth, 200, 2);
                 return false;
               }
               for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
@@ -348,12 +351,20 @@
                   if (v < 1) {
                     v = 1;
                   }
-                  return v = Math.min(maxv, (v + 2) * a);
+                  v = Math.min(maxv, (v + 2) * a);
+                  notWheeling = false;
+                  return setTimeoutWithId((function() {
+                    return notWheeling = true;
+                  }), 500, 0);
                 } else {
                   if (v > -1) {
                     v = -1;
                   }
-                  return v = Math.max(naxv, (v - 2) * a);
+                  v = Math.max(naxv, (v - 2) * a);
+                  notWheeling = false;
+                  return setTimeoutWithId((function() {
+                    return notWheeling = true;
+                  }), 500, 0);
                 }
               }
             });
