@@ -184,7 +184,7 @@
               xchanged = false
 
 
-              if (classifyClosest || snap) && notWheeling
+              if classifyClosest || snap
 
                 snapTargetX = itemWidth * Math.round(xCont / itemWidth)
                 newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) % items.length
@@ -193,7 +193,7 @@
                 if classifyClosest && scope.closestItem != newSnappedItem
                   setClosestItem newSnappedItem
 
-                if allowClick && Math.abs(v) < snapVelocityTrigger
+                if notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger
 
                   if xCont != snapTargetX
                     xCont += (snapTargetX-xCont)*spring

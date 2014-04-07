@@ -206,14 +206,14 @@
                 var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
                 if (!jumping && items && itemWidth) {
                   xchanged = false;
-                  if ((classifyClosest || snap) && notWheeling) {
+                  if (classifyClosest || snap) {
                     snapTargetX = itemWidth * Math.round(xCont / itemWidth);
                     newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
                     newSnappedItem = items[newSnappedItemId].elm;
                     if (classifyClosest && scope.closestItem !== newSnappedItem) {
                       setClosestItem(newSnappedItem);
                     }
-                    if (allowClick && Math.abs(v) < snapVelocityTrigger) {
+                    if (notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger) {
                       if (xCont !== snapTargetX) {
                         xCont += (snapTargetX - xCont) * spring;
                         if (Math.abs(snapTargetX - xCont) < 1) {
