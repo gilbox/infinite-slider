@@ -1,4 +1,6 @@
 (function() {
+  var __modulo = function(a, b) { return (a % b + +b) % b; };
+
   (function() {
     angular.module('gilbox.infiniteSlider.helpers', []).factory('browserHelper', [
       '$window', function($window) {
@@ -208,7 +210,7 @@
                   xchanged = false;
                   if (classifyClosest || snap) {
                     snapTargetX = itemWidth * Math.round(xCont / itemWidth);
-                    newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth) % items.length;
+                    newSnappedItemId = __modulo(firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth, items.length);
                     newSnappedItem = items[newSnappedItemId].elm;
                     if (classifyClosest && scope.closestItem !== newSnappedItem) {
                       setClosestItem(newSnappedItem);
