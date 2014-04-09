@@ -355,8 +355,10 @@
                   }
                   v = Math.min(maxv, (v + 2) * a);
                   notWheeling = false;
+                  element.addClass('wheeling');
                   return setTimeoutWithId((function() {
-                    return notWheeling = true;
+                    notWheeling = true;
+                    return element.removeClass('wheeling');
                   }), 200, 0);
                 } else {
                   if (v > -1) {
@@ -364,8 +366,10 @@
                   }
                   v = Math.max(naxv, (v - 2) * a);
                   notWheeling = false;
+                  element.addClass('wheeling');
                   return setTimeoutWithId((function() {
-                    return notWheeling = true;
+                    notWheeling = true;
+                    return element.removeClass('wheeling');
                   }), 200, 0);
                 }
               }

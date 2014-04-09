@@ -315,12 +315,14 @@
               v = 1  if v < 1
               v = Math.min(maxv, (v + 2) * a)
               notWheeling = false
-              setTimeoutWithId (-> notWheeling = true), 200, 0
+              element.addClass('wheeling')
+              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
             else
               v = -1  if v > -1
               v = Math.max(naxv, (v - 2) * a)
               notWheeling = false
-              setTimeoutWithId (-> notWheeling = true), 200, 0
+              element.addClass('wheeling')
+              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
 
 
         readItems = ->
