@@ -46,7 +46,7 @@
   angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers'])
 
     # define a touch-region using infinite-slider-boundary
-    # must be a parent of the infinite-slider element.
+    # may be a parent, or child, of the infinite-slider element.
     .directive 'infiniteSliderBoundary', ->
       restrict: 'AE'
       scope: {} # necessary to isolate msd-wheel scope with multiple sliders
