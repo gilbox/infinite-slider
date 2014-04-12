@@ -60,6 +60,7 @@
         transclude: true,
         replace: true,
         template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>',
+        require: '?^infiniteSlider',
         controller: [
           '$scope', '$element', function($scope, $element) {
             this.elm = $element;
@@ -68,17 +69,42 @@
             };
             return this;
           }
-        ]
+        ],
+        link: function(scope, element, attrs, ctrl) {
+          console.log("-->ctrl", ctrl);
+          if (ctrl) {
+            return ctrl.setBoundaryElm(element);
+          }
+        }
+      };
+    }).directive('infiniteSliderContent', function() {
+      return {
+        restrict: 'AE',
+        require: '^infiniteSlider',
+        link: function(scope, element, attrs, ctrl) {
+          return ctrl.setContElm(element);
+        }
       };
     }).directive('infiniteSlider', [
       '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
         return {
-          restrict: 'A',
+          restrict: 'AE',
           scope: {
             slides: '=?',
             snappedItemId: '=?'
           },
-          require: '^infiniteSliderBoundary',
+          require: '?^infiniteSliderBoundary',
+          controller: [
+            '$scope', function($scope) {
+              this.setBoundaryElm = function(elm) {
+                return $scope.boundaryElm = elm;
+              };
+              this.setContElm = function(elm) {
+                return $scope.contElm = elm;
+              };
+              return this;
+            }
+          ],
           link: function(scope, element, attrs, boundaryCtrl) {
             var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
@@ -94,8 +120,8 @@
             xCont = 0;
             naxv = -maxv;
             winElm = angular.element($window);
-            boundaryElm = (boundaryCtrl && boundaryCtrl.elm) || element;
-            contElm = element.children().eq(0);
+            boundaryElm = scope.boundaryElm || (boundaryCtrl && boundaryCtrl.elm) || element;
+            contElm = scope.contElm || element.children().eq(0);
             items = null;
             endTypes = 'touchend touchcancel mouseup mouseleave';
             moveTypes = 'touchmove mousemove';
@@ -346,34 +372,36 @@
                 return rearrange();
               }
             };
-            boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
-              if (deltaX) {
-                event.preventDefault();
-                if (deltaX > 0) {
-                  if (v < 1) {
-                    v = 1;
+            if (boundaryCtrl) {
+              boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
+                if (deltaX) {
+                  event.preventDefault();
+                  if (deltaX > 0) {
+                    if (v < 1) {
+                      v = 1;
+                    }
+                    v = Math.min(maxv, (v + 2) * a);
+                    notWheeling = false;
+                    element.addClass('wheeling');
+                    return setTimeoutWithId((function() {
+                      notWheeling = true;
+                      return element.removeClass('wheeling');
+                    }), 200, 0);
+                  } else {
+                    if (v > -1) {
+                      v = -1;
+                    }
+                    v = Math.max(naxv, (v - 2) * a);
+                    notWheeling = false;
+                    element.addClass('wheeling');
+                    return setTimeoutWithId((function() {
+                      notWheeling = true;
+                      return element.removeClass('wheeling');
+                    }), 200, 0);
                   }
-                  v = Math.min(maxv, (v + 2) * a);
-                  notWheeling = false;
-                  element.addClass('wheeling');
-                  return setTimeoutWithId((function() {
-                    notWheeling = true;
-                    return element.removeClass('wheeling');
-                  }), 200, 0);
-                } else {
-                  if (v > -1) {
-                    v = -1;
-                  }
-                  v = Math.max(naxv, (v - 2) * a);
-                  notWheeling = false;
-                  element.addClass('wheeling');
-                  return setTimeoutWithId((function() {
-                    notWheeling = true;
-                    return element.removeClass('wheeling');
-                  }), 200, 0);
                 }
-              }
-            });
+              });
+            }
             readItems = function() {
               items = contElm.children();
               if ((items == null) || !items.length) {

@@ -53,19 +53,33 @@
       transclude: true
       replace: true
       template: '<div ng-transclude msd-wheel="wheel($event, $delta, $deltaX, $deltaY)"></div>'
+      require: '?^infiniteSlider'
       controller: ['$scope', '$element', ($scope, $element) ->
         @elm = $element
         @setWheelFn = (fn) -> $scope.wheel = fn
         @ # why is this necessary?
       ]
+      link: (scope, element, attrs, ctrl) ->
+        console.log "-->ctrl", ctrl
+        ctrl.setBoundaryElm(element) if ctrl
+
+    .directive 'infiniteSliderContent', ->
+      restrict: 'AE'
+      require: '^infiniteSlider'
+      link: (scope, element, attrs, ctrl) -> ctrl.setContElm element
 
     .directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
-      restrict: 'A'
+      restrict: 'AE'
       scope: {
         slides: '=?',
         snappedItemId: '=?'
       }
-      require: '^infiniteSliderBoundary'
+      require: '?^infiniteSliderBoundary'
+      controller: [ '$scope', ($scope) ->
+        @setBoundaryElm = (elm) -> $scope.boundaryElm = elm
+        @setContElm = (elm) -> $scope.contElm = elm
+        @
+      ]
       link: (scope, element, attrs, boundaryCtrl) ->
         a = attrs.acceleration || 1.05         # "acceleration"  > 1
         f = attrs.friction || 0.95            # "friction" < 1
@@ -81,8 +95,8 @@
         xCont = 0
         naxv = -maxv
         winElm = angular.element($window)
-        boundaryElm = (boundaryCtrl && boundaryCtrl.elm) || element;
-        contElm = element.children().eq(0)
+        boundaryElm = scope.boundaryElm || (boundaryCtrl && boundaryCtrl.elm) || element;
+        contElm = scope.contElm || element.children().eq(0)
         items = null
         endTypes = 'touchend touchcancel mouseup mouseleave'
         moveTypes = 'touchmove mousemove'
@@ -308,21 +322,22 @@
             #       layout could still pose a problem
 
 
-        boundaryCtrl.setWheelFn (event, delta, deltaX, deltaY) ->
-          if deltaX
-            event.preventDefault()
-            if deltaX > 0
-              v = 1  if v < 1
-              v = Math.min(maxv, (v + 2) * a)
-              notWheeling = false
-              element.addClass('wheeling')
-              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
-            else
-              v = -1  if v > -1
-              v = Math.max(naxv, (v - 2) * a)
-              notWheeling = false
-              element.addClass('wheeling')
-              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
+        if boundaryCtrl
+          boundaryCtrl.setWheelFn (event, delta, deltaX, deltaY) ->
+            if deltaX
+              event.preventDefault()
+              if deltaX > 0
+                v = 1  if v < 1
+                v = Math.min(maxv, (v + 2) * a)
+                notWheeling = false
+                element.addClass('wheeling')
+                setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
+              else
+                v = -1  if v > -1
+                v = Math.max(naxv, (v - 2) * a)
+                notWheeling = false
+                element.addClass('wheeling')
+                setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
 
 
         readItems = ->
