@@ -18,7 +18,7 @@
       <div infinite-slider-content class="infinite-slider-content">
 
         <div class="slide" ng-repeat="item in listData.items track by $index">
-          <img ng-src="{{item.img}}" alt=""/>
+          <img draggable="false" ng-src="{{item.img}}" alt=""/>
         </div>
 
       </div>
