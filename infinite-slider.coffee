@@ -80,7 +80,7 @@
       ]
       link: (scope, element, attrs, boundaryCtrl) ->
         a = attrs.acceleration || 1.05         # "acceleration"  > 1
-        f = attrs.friction || 0.95            # "friction" < 1
+        f = attrs.friction || 0.95            # 0 < "friction" < 1
         spring = attrs.springBack || 0.3      # spring-back 0..1 1=fastest
         clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
         maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
@@ -279,6 +279,8 @@
             contElm.css('left', xCont + 'px');
 
 
+        # returns false if unable to calculate a content width,
+        # otherwise assigns the value to contentWidth
         calcContentWidth = ->
           return if !items
           contentWidth = 0

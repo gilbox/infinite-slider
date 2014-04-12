@@ -71,7 +71,6 @@
           }
         ],
         link: function(scope, element, attrs, ctrl) {
-          console.log("-->ctrl", ctrl);
           if (ctrl) {
             return ctrl.setBoundaryElm(element);
           }
