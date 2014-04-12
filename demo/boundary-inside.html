@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <title>AngularJS Infinite Slider</title>
+  <link rel="stylesheet" href="stylesheet.css"/>
+</head>
+<body ng-controller="appCtrl">
+
+<header>
+  <h1>Infinite Slider for AngularJS</h1>
+  <p>by <a href="http://gilbox.me">Gil Birman</a></p>
+</header>
+
+
+<div infinite-slider-boundary class="infinite-slider-window boundary-inside">
+  <div infinite-slider classify-closest classify-snapped slides="listData.items" snap="true" snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
+    <div infinite-slider-boundary class="infinite-slider-boundary"></div>
+
+    <div infinite-slider-content class="infinite-slider-content">
+
+      <div class="slide" ng-repeat="item in listData.items track by $index">
+        <img ng-src="{{item.img}}" alt=""/>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+snappedItemId: <input type="text" ng-model="listData.snappedItemId"/><br/>
+url: <a href="{{listData.items[listData.snappedItemId].link}}">{{listData.items[listData.snappedItemId].link}}</a>
+
+
+<blockquote>
+
+  This demo shows how to place the infinite-slider-boundary element inside of the
+  infinite-slider element so mouse and touch events are confined to a smaller region.
+  A red border has been added to the infinite-slider-boundary element to make this region obvious.
+
+</blockquote>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
+<script src="vendor/hamster.js"></script>
+<script src="vendor/mousewheel.js"></script>
+<script src="infinite-slider.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

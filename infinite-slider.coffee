@@ -59,7 +59,10 @@
         @setWheelFn = (fn) -> $scope.wheel = fn
         @ # why is this necessary?
       ]
-      link: (scope, element, attrs, ctrl) -> ctrl.setBoundaryElm(element) if ctrl
+      link: (scope, element, attrs, ctrl) ->
+        if ctrl
+          ctrl.setBoundaryElm(element)
+          scope.wheel = ctrl.wheelFn
 
     .directive 'infiniteSliderContent', ->
       restrict: 'AE'
@@ -76,6 +79,7 @@
       controller: [ '$scope', ($scope) ->
         @setBoundaryElm = (elm) -> $scope.boundaryElm = elm
         @setContElm = (elm) -> $scope.contElm = elm
+        @wheelFn = (event, delta, deltaX, deltaY) -> $scope.wheelFn(event, delta, deltaX, deltaY) if $scope.wheelFn
         @
       ]
       link: (scope, element, attrs, boundaryCtrl) ->
@@ -320,23 +324,23 @@
             #       change in position of element and offset xCont accordingliny, although responsive
             #       layout could still pose a problem
 
+        scope.wheelFn = (event, delta, deltaX, deltaY) ->
+          if deltaX
+            event.preventDefault()
+            if deltaX > 0
+              v = 1  if v < 1
+              v = Math.min(maxv, (v + 2) * a)
+              notWheeling = false
+              element.addClass('wheeling')
+              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
+            else
+              v = -1  if v > -1
+              v = Math.max(naxv, (v - 2) * a)
+              notWheeling = false
+              element.addClass('wheeling')
+              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
 
-        if boundaryCtrl
-          boundaryCtrl.setWheelFn (event, delta, deltaX, deltaY) ->
-            if deltaX
-              event.preventDefault()
-              if deltaX > 0
-                v = 1  if v < 1
-                v = Math.min(maxv, (v + 2) * a)
-                notWheeling = false
-                element.addClass('wheeling')
-                setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
-              else
-                v = -1  if v > -1
-                v = Math.max(naxv, (v - 2) * a)
-                notWheeling = false
-                element.addClass('wheeling')
-                setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
+        if boundaryCtrl then boundaryCtrl.setWheelFn(scope.wheelFn)
 
 
         readItems = ->

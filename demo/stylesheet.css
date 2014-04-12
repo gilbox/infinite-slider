@@ -5,11 +5,20 @@ html, body {
 header {
   padding: 0 0 0 20px; }
 
-.infinite-slider-boundary {
-  overflow: hidden; }
+.infinite-slider-window {
+  position: relative;
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
 
 .infinite-slider-container {
-  position: relaive;
+  position: relative;
   margin: auto;
   z-index: 1;
   overflow: visible; }
@@ -25,6 +34,12 @@ header {
     .infinite-slider-container,
     .infinite-slider-boundary {
       height: 220px; } }
+
+.boundary-inside .infinite-slider-boundary {
+  position: absolute;
+  z-index: 2;
+  width: 410px;
+  border: 1px solid rgba(255, 0, 0, 0.7); }
 
 .infinite-slider-container {
   width: 410px; }

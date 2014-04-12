@@ -72,7 +72,8 @@
         ],
         link: function(scope, element, attrs, ctrl) {
           if (ctrl) {
-            return ctrl.setBoundaryElm(element);
+            ctrl.setBoundaryElm(element);
+            return scope.wheel = ctrl.wheelFn;
           }
         }
       };
@@ -100,6 +101,11 @@
               };
               this.setContElm = function(elm) {
                 return $scope.contElm = elm;
+              };
+              this.wheelFn = function(event, delta, deltaX, deltaY) {
+                if ($scope.wheelFn) {
+                  return $scope.wheelFn(event, delta, deltaX, deltaY);
+                }
               };
               return this;
             }
@@ -370,35 +376,36 @@
                 return rearrange();
               }
             };
-            if (boundaryCtrl) {
-              boundaryCtrl.setWheelFn(function(event, delta, deltaX, deltaY) {
-                if (deltaX) {
-                  event.preventDefault();
-                  if (deltaX > 0) {
-                    if (v < 1) {
-                      v = 1;
-                    }
-                    v = Math.min(maxv, (v + 2) * a);
-                    notWheeling = false;
-                    element.addClass('wheeling');
-                    return setTimeoutWithId((function() {
-                      notWheeling = true;
-                      return element.removeClass('wheeling');
-                    }), 200, 0);
-                  } else {
-                    if (v > -1) {
-                      v = -1;
-                    }
-                    v = Math.max(naxv, (v - 2) * a);
-                    notWheeling = false;
-                    element.addClass('wheeling');
-                    return setTimeoutWithId((function() {
-                      notWheeling = true;
-                      return element.removeClass('wheeling');
-                    }), 200, 0);
+            scope.wheelFn = function(event, delta, deltaX, deltaY) {
+              if (deltaX) {
+                event.preventDefault();
+                if (deltaX > 0) {
+                  if (v < 1) {
+                    v = 1;
                   }
+                  v = Math.min(maxv, (v + 2) * a);
+                  notWheeling = false;
+                  element.addClass('wheeling');
+                  return setTimeoutWithId((function() {
+                    notWheeling = true;
+                    return element.removeClass('wheeling');
+                  }), 200, 0);
+                } else {
+                  if (v > -1) {
+                    v = -1;
+                  }
+                  v = Math.max(naxv, (v - 2) * a);
+                  notWheeling = false;
+                  element.addClass('wheeling');
+                  return setTimeoutWithId((function() {
+                    notWheeling = true;
+                    return element.removeClass('wheeling');
+                  }), 200, 0);
                 }
-              });
+              }
+            };
+            if (boundaryCtrl) {
+              boundaryCtrl.setWheelFn(scope.wheelFn);
             }
             readItems = function() {
               items = contElm.children();
