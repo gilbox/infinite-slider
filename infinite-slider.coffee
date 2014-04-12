@@ -260,7 +260,6 @@
                 'transition': 'transform .5s'
               jumping = true
 
-              clearTimeout(transform_toid)
               setTimeoutWithId ->
                 contElm.css
                   '-webkit-transition': 'none'

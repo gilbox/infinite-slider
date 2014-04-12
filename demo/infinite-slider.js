@@ -301,7 +301,6 @@
                     'transition': 'transform .5s'
                   });
                   jumping = true;
-                  clearTimeout(transform_toid);
                   setTimeoutWithId(function() {
                     contElm.css({
                       '-webkit-transition': 'none',
