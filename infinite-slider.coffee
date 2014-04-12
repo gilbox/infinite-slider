@@ -59,9 +59,7 @@
         @setWheelFn = (fn) -> $scope.wheel = fn
         @ # why is this necessary?
       ]
-      link: (scope, element, attrs, ctrl) ->
-        console.log "-->ctrl", ctrl
-        ctrl.setBoundaryElm(element) if ctrl
+      link: (scope, element, attrs, ctrl) -> ctrl.setBoundaryElm(element) if ctrl
 
     .directive 'infiniteSliderContent', ->
       restrict: 'AE'
