@@ -103,9 +103,7 @@
                 return $scope.contElm = elm;
               };
               this.wheelFn = function(event, delta, deltaX, deltaY) {
-                if ($scope.wheelFn) {
-                  return $scope.wheelFn(event, delta, deltaX, deltaY);
-                }
+                return $scope.wheelFn(event, delta, deltaX, deltaY);
               };
               return this;
             }

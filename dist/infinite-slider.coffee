@@ -79,7 +79,7 @@
       controller: [ '$scope', ($scope) ->
         @setBoundaryElm = (elm) -> $scope.boundaryElm = elm
         @setContElm = (elm) -> $scope.contElm = elm
-        @wheelFn = (event, delta, deltaX, deltaY) -> $scope.wheelFn(event, delta, deltaX, deltaY) if $scope.wheelFn
+        @wheelFn = (event, delta, deltaX, deltaY) -> $scope.wheelFn(event, delta, deltaX, deltaY)
         @
       ]
       link: (scope, element, attrs, boundaryCtrl) ->
