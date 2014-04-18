@@ -240,11 +240,11 @@
                 scope.closestItem.removeClass('closest');
               }
               newClosestItem.addClass('closest');
-              scope.closestItem = newClosestItem;
-              if (closestItemId_isBound) {
+              if (closestItemId_isBound && scope.closestItem) {
                 scope.closestItemId = newClosestItem.idx;
-                return scope.$apply();
+                scope.$apply();
               }
+              return scope.closestItem = newClosestItem;
             };
             run = function() {
               return setInterval((function() {

@@ -200,10 +200,10 @@
         setClosestItem = (newClosestItem) ->
           scope.closestItem.removeClass 'closest' if scope.closestItem
           newClosestItem.addClass 'closest'
-          scope.closestItem = newClosestItem
-          if closestItemId_isBound
+          if closestItemId_isBound && scope.closestItem # skip first call by checking if cloestItem is undefined
             scope.closestItemId = newClosestItem.idx
             scope.$apply()
+          scope.closestItem = newClosestItem
 
 
         run = ->
