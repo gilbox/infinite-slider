@@ -201,7 +201,9 @@
           scope.closestItem.removeClass 'closest' if scope.closestItem
           newClosestItem.addClass 'closest'
           scope.closestItem = newClosestItem
-          scope.closestItemId = newClosestItem.idx if closestItemId_isBound
+          if closestItemId_isBound
+            scope.closestItemId = newClosestItem.idx
+            scope.$apply()
 
 
         run = ->

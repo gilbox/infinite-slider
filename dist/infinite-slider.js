@@ -242,7 +242,8 @@
               newClosestItem.addClass('closest');
               scope.closestItem = newClosestItem;
               if (closestItemId_isBound) {
-                return scope.closestItemId = newClosestItem.idx;
+                scope.closestItemId = newClosestItem.idx;
+                return scope.$apply();
               }
             };
             run = function() {
