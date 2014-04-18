@@ -2,6 +2,7 @@
   var __modulo = function(a, b) { return (a % b + +b) % b; };
 
   (function() {
+    var deps, e;
     angular.module('gilbox.infiniteSlider.helpers', []).factory('browserHelper', [
       '$window', function($window) {
         var _has3d;
@@ -53,7 +54,14 @@
         };
       }
     ]);
-    return angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers']).directive('infiniteSliderBoundary', function() {
+    deps = ['gilbox.infiniteSlider.helpers'];
+    try {
+      angular.module('monospaced.mousewheel');
+      deps.unshift('monospaced.mousewheel');
+    } catch (_error) {
+      e = _error;
+    }
+    return angular.module('gilbox.infiniteSlider', deps).directive('infiniteSliderBoundary', function() {
       return {
         restrict: 'AE',
         scope: {},

@@ -43,7 +43,14 @@
 
   ] # /browserHelper
 
-  angular.module('gilbox.infiniteSlider', ['monospaced.mousewheel', 'gilbox.infiniteSlider.helpers'])
+  # Optional mousewheel support
+  deps = ['gilbox.infiniteSlider.helpers']
+  try
+    angular.module 'monospaced.mousewheel'
+    deps.unshift 'monospaced.mousewheel'
+  catch e
+
+  angular.module('gilbox.infiniteSlider', deps)
 
     # define a touch-region using infinite-slider-boundary
     # may be a parent, or child, of the infinite-slider element.

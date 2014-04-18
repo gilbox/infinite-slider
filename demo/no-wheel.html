@@ -32,17 +32,12 @@ url: <a href="{{listData.items[listData.snappedItemId].link}}">{{listData.items[
 <blockquote>
 
   This demo shows how to use infinite-scroller without mousewheel support, so that there are no external dependencies.
-  Just add the following JavaScript before loading infinite-slider.js:
+  (Just don't include the mousewheel dependencies)
 
-  <blockquote><code> angular.module('monospaced.mousewheel', []); </code> </blockquote>
 </blockquote>
 
 
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.js"></script>
-<script>
-  // this removes the mousewheel dependencies and disables mousewheel
-  angular.module('monospaced.mousewheel', []);
-</script>
 <script src="infinite-slider.js"></script>
 <script src="app.js"></script>
 
