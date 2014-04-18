@@ -91,7 +91,8 @@
           restrict: 'AE',
           scope: {
             slides: '=?',
-            snappedItemId: '=?'
+            snappedItemId: '=?',
+            closestItemId: '=?'
           },
           require: '?^infiniteSliderBoundary',
           controller: [
@@ -109,7 +110,7 @@
             }
           ],
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
@@ -142,6 +143,7 @@
             jumping = false;
             snappedItemId = scope.snappedItemId;
             snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
+            closestItemId_isBound = scope.hasOwnProperty('closestItemId');
             notWheeling = true;
             has3d = browserHelper.has3d();
             toIds = {};
@@ -230,7 +232,10 @@
                 scope.closestItem.removeClass('closest');
               }
               newClosestItem.addClass('closest');
-              return scope.closestItem = newClosestItem;
+              scope.closestItem = newClosestItem;
+              if (closestItemId_isBound) {
+                return scope.closestItemId = newClosestItem.idx;
+              }
             };
             run = function() {
               return setInterval((function() {

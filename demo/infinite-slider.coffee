@@ -73,7 +73,8 @@
       restrict: 'AE'
       scope: {
         slides: '=?',
-        snappedItemId: '=?'
+        snappedItemId: '=?',
+        closestItemId: '=?'
       }
       require: '?^infiniteSliderBoundary'
       controller: [ '$scope', ($scope) ->
@@ -116,6 +117,7 @@
         jumping = false
         snappedItemId = scope.snappedItemId # we'll keep track of snapped item id even if an attribute isn't present
         snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
+        closestItemId_isBound = scope.hasOwnProperty('closestItemId')
         notWheeling = true
 
         has3d = browserHelper.has3d()
@@ -192,6 +194,7 @@
           scope.closestItem.removeClass 'closest' if scope.closestItem
           newClosestItem.addClass 'closest'
           scope.closestItem = newClosestItem
+          scope.closestItemId = newClosestItem.idx if closestItemId_isBound
 
 
         run = ->
