@@ -39,7 +39,8 @@
         when event.originalEvent? && event.originalEvent.touches? && event.originalEvent.touches.length
           event.originalEvent.touches[0]
         else event
-      angular.extend e, {x: e.pageX, y: e.pageY}
+      # TODO: Make this more efficient. We are extending the new object here because mobile safari re-uses touch event objects.
+      angular.extend {x: e.pageX, y: e.pageY}, e
 
   ] # /browserHelper
 

@@ -46,10 +46,10 @@
                   return event;
               }
             })();
-            return angular.extend(e, {
+            return angular.extend({
               x: e.pageX,
               y: e.pageY
-            });
+            }, e);
           }
         };
       }
