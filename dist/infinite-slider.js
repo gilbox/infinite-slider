@@ -385,7 +385,13 @@
                     setClosestItem(items[0].elm);
                   }
                 }
-                return rearrange();
+                if (snappedItemId != null) {
+                  xCont = -itemWidth * snappedItemId;
+                  rearrange();
+                  return doTransform();
+                } else {
+                  return rearrange();
+                }
               }
             };
             scope.wheelFn = function(event, delta, deltaX, deltaY) {

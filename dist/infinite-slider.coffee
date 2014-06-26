@@ -331,11 +331,17 @@
               if snap && ! scope.snappedItemElm          then setSnappedItem items[0].elm
               if classifyClosest && ! scope.closestItem  then setClosestItem items[0].elm
 
-            rearrange()
+            if snappedItemId?
 
-            # todo: to prevent snapped item from changing on window resize, we could calculate
-            #       change in position of element and offset xCont accordingliny, although responsive
-            #       layout could still pose a problem
+              # to prevent snapped item from changing on window resize, we recalculate
+              # xCont accordingly, but will responsive layout still pose a problem ??
+
+              xCont = -itemWidth * snappedItemId
+              rearrange()
+              doTransform()
+
+            else
+              rearrange()
 
         scope.wheelFn = (event, delta, deltaX, deltaY) ->
           if deltaX
