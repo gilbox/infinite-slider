@@ -130,6 +130,8 @@
 
         has3d = browserHelper.has3d()
 
+        # declare this variable here which is calculated in run() so it may be utilized by the snappedItemId $watcher
+        snapTargetX = 0
 
         toIds = {}
         setTimeoutWithId = (fn, ms, id) ->
@@ -377,8 +379,14 @@
           # the second condition determines if the id was changed internally,
           # because if it was then we don't need to do this stuff
           if 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
+            # calculate the shortest distance to the newId item because otherwise it breaks the endless effect
+            # @todo: there might be a simpler way to do this
+            vId = if newId<snappedItemId then items.length+newId else newId-items.length
+            targetId = if Math.abs(vId-snappedItemId) < Math.abs(newId-snappedItemId) then vId else newId
+            deltaId = targetId - snappedItemId
+  
             setSnappedItem items[newId].elm
-            xCont = -itemWidth * newId
+            xCont = snapTargetX - itemWidth * deltaId
             calcContentWidth()
             rearrange()
             doTransform(true)

@@ -118,7 +118,7 @@
             }
           ],
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
@@ -154,6 +154,7 @@
             closestItemId_isBound = scope.hasOwnProperty('closestItemId');
             notWheeling = true;
             has3d = browserHelper.has3d();
+            snapTargetX = 0;
             toIds = {};
             setTimeoutWithId = function(fn, ms, id) {
               clearTimeout(toIds[id]);
@@ -248,7 +249,7 @@
             };
             run = function() {
               return setInterval((function() {
-                var newSnappedItem, newSnappedItemId, snapTargetX, xchanged;
+                var newSnappedItem, newSnappedItemId, xchanged;
                 if (!jumping && items && itemWidth) {
                   xchanged = false;
                   if (classifyClosest || snap) {
@@ -436,10 +437,14 @@
               return onWinResize();
             });
             scope.$watch('snappedItemId', function(newId) {
+              var deltaId, targetId, vId;
               newId = parseInt(newId);
               if ((0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
+                vId = newId < snappedItemId ? items.length + newId : newId - items.length;
+                targetId = Math.abs(vId - snappedItemId) < Math.abs(newId - snappedItemId) ? vId : newId;
+                deltaId = targetId - snappedItemId;
                 setSnappedItem(items[newId].elm);
-                xCont = -itemWidth * newId;
+                xCont = snapTargetX - itemWidth * deltaId;
                 calcContentWidth();
                 rearrange();
                 return doTransform(true);
