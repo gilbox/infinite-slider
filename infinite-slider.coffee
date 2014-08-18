@@ -382,7 +382,7 @@
 
         scope.$watch 'snappedItemId', (newId) ->
           newId = parseInt(newId)
-          # the second condition determines if the id was changed internally,
+          # the third condition determines if the id was changed internally,
           # because if it was then we don't need to do this stuff
           if items and 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
             # calculate the shortest distance to the newId item because otherwise it breaks the endless effect
