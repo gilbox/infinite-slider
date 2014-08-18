@@ -77,10 +77,9 @@
       require: '^infiniteSlider'
       link: (scope, element, attrs, ctrl) -> ctrl.setContElm element
 
-    .directive 'infiniteSlider', ['$window', '$document', 'browserHelper', ($window, $document, browserHelper) ->
+    .directive 'infiniteSlider', ['$window', '$document', '$timeout', 'browserHelper', ($window, $document, $timeout, browserHelper) ->
       restrict: 'AE'
       scope: {
-        slides: '=?',
         snappedItemId: '=?',
         closestItemId: '=?'
       }
@@ -102,6 +101,7 @@
         classifyClosest = attrs.hasOwnProperty('classifyClosest') && attrs.classifyClosest != 'false'
         classifySnapped = attrs.hasOwnProperty('classifySnapped') && attrs.classifySnapped != 'false'
 
+        elmScope = element.scope()
         v = 0           # "velocity"
         xCont = 0
         naxv = -maxv
@@ -369,9 +369,15 @@
           items =  null if !items? || !items.length
 
 
-        scope.$watch 'slides', ->
-          readItems()
-          onWinResize()
+        if attrs.slides
+          elmScope.$watch attrs.slides, ->
+            readItems()
+            onWinResize()
+          , true
+        else
+          $timeout ->
+            readItems()
+            onWinResize()
 
 
         scope.$watch 'snappedItemId', (newId) ->
@@ -391,11 +397,6 @@
             rearrange()
             doTransform(true)
 
-
-        # initialize
-
-        readItems()
-        onWinResize()
 
         run()
         winElm.on 'resize', onWinResize

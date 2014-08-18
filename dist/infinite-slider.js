@@ -94,11 +94,10 @@
         }
       };
     }).directive('infiniteSlider', [
-      '$window', '$document', 'browserHelper', function($window, $document, browserHelper) {
+      '$window', '$document', '$timeout', 'browserHelper', function($window, $document, $timeout, browserHelper) {
         return {
           restrict: 'AE',
           scope: {
-            slides: '=?',
             snappedItemId: '=?',
             closestItemId: '=?'
           },
@@ -118,7 +117,7 @@
             }
           ],
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
@@ -128,6 +127,7 @@
             snapVelocityTrigger = attrs.snapVelocityTrigger || 3;
             classifyClosest = attrs.hasOwnProperty('classifyClosest') && attrs.classifyClosest !== 'false';
             classifySnapped = attrs.hasOwnProperty('classifySnapped') && attrs.classifySnapped !== 'false';
+            elmScope = element.scope();
             v = 0;
             xCont = 0;
             naxv = -maxv;
@@ -432,10 +432,17 @@
                 return items = null;
               }
             };
-            scope.$watch('slides', function() {
-              readItems();
-              return onWinResize();
-            });
+            if (attrs.slides) {
+              elmScope.$watch(attrs.slides, function() {
+                readItems();
+                return onWinResize();
+              }, true);
+            } else {
+              $timeout(function() {
+                readItems();
+                return onWinResize();
+              });
+            }
             scope.$watch('snappedItemId', function(newId) {
               var deltaId, targetId, vId;
               newId = parseInt(newId);
@@ -450,8 +457,6 @@
                 return doTransform(true);
               }
             });
-            readItems();
-            onWinResize();
             run();
             return winElm.on('resize', onWinResize);
           }
