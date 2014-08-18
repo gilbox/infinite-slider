@@ -446,7 +446,7 @@
             scope.$watch('snappedItemId', function(newId) {
               var deltaId, targetId, vId;
               newId = parseInt(newId);
-              if ((0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
+              if (items && (0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
                 vId = newId < snappedItemId ? items.length + newId : newId - items.length;
                 targetId = Math.abs(vId - snappedItemId) < Math.abs(newId - snappedItemId) ? vId : newId;
                 deltaId = targetId - snappedItemId;
