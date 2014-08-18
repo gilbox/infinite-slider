@@ -444,12 +444,15 @@
               });
             }
             scope.$watch('snappedItemId', function(newId) {
-              var deltaId, targetId, vId;
+              var deltaId;
               newId = parseInt(newId);
               if ((0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
-                vId = newId < snappedItemId ? items.length + newId : newId - items.length;
-                targetId = Math.abs(vId - snappedItemId) < Math.abs(newId - snappedItemId) ? vId : newId;
-                deltaId = targetId - snappedItemId;
+                deltaId = newId - snappedItemId;
+                if (deltaId = 1 - items.length) {
+                  deltaId = 1;
+                } else if (deltaId === items.length - 1) {
+                  deltaId = -1;
+                }
                 setSnappedItem(items[newId].elm);
                 xCont = snapTargetX - itemWidth * deltaId;
                 calcContentWidth();
