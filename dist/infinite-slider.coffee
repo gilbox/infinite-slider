@@ -386,9 +386,10 @@
           # because if it was then we don't need to do this stuff
           if 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
             # calculate the shortest distance to the newId item because otherwise it breaks the endless effect
-            deltaId = newId - snappedItemId
-            if deltaId = 1 - items.length then deltaId = 1
-            else if deltaId == items.length - 1 then deltaId = -1
+            # @todo: there might be a simpler way to do this
+            vId = if newId<snappedItemId then items.length+newId else newId-items.length
+            targetId = if Math.abs(vId-snappedItemId) < Math.abs(newId-snappedItemId) then vId else newId
+            deltaId = targetId - snappedItemId
   
             setSnappedItem items[newId].elm
             xCont = snapTargetX - itemWidth * deltaId
