@@ -330,8 +330,8 @@
           if calcContentWidth()
 
             if items
-              if snap && ! scope.snappedItemElm          then setSnappedItem items[0].elm
-              if classifyClosest && ! scope.closestItem  then setClosestItem items[0].elm
+              if snap && ! scope.snappedItemElm          then setSnappedItem items[snappedItemId || 0].elm
+              if classifyClosest && ! scope.closestItem  then setClosestItem items[snappedItemId || 0].elm
 
             if snappedItemId?
 

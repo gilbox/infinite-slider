@@ -380,10 +380,10 @@
               if (calcContentWidth()) {
                 if (items) {
                   if (snap && !scope.snappedItemElm) {
-                    setSnappedItem(items[0].elm);
+                    setSnappedItem(items[snappedItemId || 0].elm);
                   }
                   if (classifyClosest && !scope.closestItem) {
-                    setClosestItem(items[0].elm);
+                    setClosestItem(items[snappedItemId || 0].elm);
                   }
                 }
                 if (snappedItemId != null) {

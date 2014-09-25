@@ -28,7 +28,8 @@ app.controller('appCtrl', function($scope) {
   imgs = imgs.concat(imgs);
 
   $scope.listData = {
-    items: imgs
+    items: imgs,
+    snappedItemId: 3  // this works!
   };
 
 });
