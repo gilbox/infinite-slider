@@ -15,7 +15,7 @@ You can download infinite-slider by:
 
 #Dependencies
 
-infinite-slider depends on Angular, [angular-mousewheel](https://github.com/monospaced/angular-mousewheel), and [hamsterjs](https://github.com/monospaced/hamster.js).
+infinite-slider depends on Angular, [animation-frame](https://github.com/kof/animation-frame), [angular-mousewheel](https://github.com/monospaced/angular-mousewheel) (optional), and [hamsterjs](https://github.com/monospaced/hamster.js) (optional: only needed if you use angular-mousewheel).
 
 
 # Getting Started
@@ -23,8 +23,9 @@ infinite-slider depends on Angular, [angular-mousewheel](https://github.com/mono
 You need the following script tags:
 
 ````html
-<script src="vendor/hamster.js"></script>
-<script src="vendor/mousewheel.js"></script>
+<script src="vendor/AnimationFrame.js"></script>
+<script src="vendor/hamster.js"></script> <!-- optional -->
+<script src="vendor/mousewheel.js"></script> <!-- optional -->
 <script src="infinite-slider.js"></script>
 ````
 
