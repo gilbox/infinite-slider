@@ -6,7 +6,7 @@
     "url": "git://github.com/gilbox/infinite-slider.git"
   },
   "devDependencies": {
-    "gulp": "~3.5.5",
+    "gulp": "~3.8.8",
     "gulp-util": "~2.2.14",
     "gulp-coffee": "~1.4.1"
   }

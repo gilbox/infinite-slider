@@ -117,7 +117,8 @@
             }
           ],
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onFrame, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            animationFrame = new AnimationFrame();
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
@@ -247,50 +248,52 @@
               }
               return scope.closestItem = newClosestItem;
             };
-            run = function() {
-              return setInterval((function() {
-                var newSnappedItem, newSnappedItemId, xchanged;
-                if (!jumping && items && itemWidth) {
-                  xchanged = false;
-                  if (classifyClosest || snap) {
-                    snapTargetX = itemWidth * Math.round(xCont / itemWidth);
-                    newSnappedItemId = __modulo(firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth, items.length);
-                    newSnappedItem = items[newSnappedItemId].elm;
-                    if (classifyClosest && scope.closestItem !== newSnappedItem) {
-                      setClosestItem(newSnappedItem);
-                    }
-                    if (notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger) {
-                      if (xCont !== snapTargetX) {
-                        xCont += (snapTargetX - xCont) * spring;
-                        if (Math.abs(snapTargetX - xCont) < 1) {
-                          xCont = snapTargetX;
-                        }
-                        xchanged = true;
-                        v = 0;
-                      } else {
-                        if (newSnappedItemId !== snappedItemId) {
-                          setSnappedItem(newSnappedItem);
-                          if (snappedItemId_isBound) {
-                            scope.$apply();
-                          }
+            onFrame = function() {
+              var newSnappedItem, newSnappedItemId, xchanged;
+              if (!jumping && items && itemWidth) {
+                xchanged = false;
+                if (classifyClosest || snap) {
+                  snapTargetX = itemWidth * Math.round(xCont / itemWidth);
+                  newSnappedItemId = __modulo(firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth, items.length);
+                  newSnappedItem = items[newSnappedItemId].elm;
+                  if (classifyClosest && scope.closestItem !== newSnappedItem) {
+                    setClosestItem(newSnappedItem);
+                  }
+                  if (notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger) {
+                    if (xCont !== snapTargetX) {
+                      xCont += (snapTargetX - xCont) * spring;
+                      if (Math.abs(snapTargetX - xCont) < 1) {
+                        xCont = snapTargetX;
+                      }
+                      xchanged = true;
+                      v = 0;
+                    } else {
+                      if (newSnappedItemId !== snappedItemId) {
+                        setSnappedItem(newSnappedItem);
+                        if (snappedItemId_isBound) {
+                          scope.$apply();
                         }
                       }
                     }
                   }
-                  if (v) {
-                    v *= f;
-                    xCont -= v;
-                    if (Math.abs(v) < 0.001) {
-                      v = 0;
-                    }
-                    xchanged = true;
-                  }
-                  if (xchanged) {
-                    doTransform();
-                    return rearrange();
-                  }
                 }
-              }), 20);
+                if (v) {
+                  v *= f;
+                  xCont -= v;
+                  if (Math.abs(v) < 0.001) {
+                    v = 0;
+                  }
+                  xchanged = true;
+                }
+                if (xchanged) {
+                  doTransform();
+                  rearrange();
+                }
+              }
+              return animationFrame.request(onFrame);
+            };
+            run = function() {
+              return animationFrame.request(onFrame);
             };
             rearrange = function() {
               var _ref, _ref1;

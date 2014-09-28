@@ -91,6 +91,7 @@
         @
       ]
       link: (scope, element, attrs, boundaryCtrl) ->
+        animationFrame = new AnimationFrame()
         a = attrs.acceleration || 1.05         # "acceleration"  > 1
         f = attrs.friction || 0.95            # 0 < "friction" < 1
         spring = attrs.springBack || 0.3      # spring-back 0..1 1=fastest
@@ -209,44 +210,45 @@
           scope.closestItem = newClosestItem
 
 
-        run = ->
-          setInterval (->
-            if !jumping && items && itemWidth
-              xchanged = false
+        onFrame = ->
+          if !jumping && items && itemWidth
+            xchanged = false
 
 
-              if classifyClosest || snap
+            if classifyClosest || snap
 
-                snapTargetX = itemWidth * Math.round(xCont / itemWidth)
-                newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) %% items.length
-                newSnappedItem = items[newSnappedItemId].elm
+              snapTargetX = itemWidth * Math.round(xCont / itemWidth)
+              newSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) %% items.length
+              newSnappedItem = items[newSnappedItemId].elm
 
-                if classifyClosest && scope.closestItem != newSnappedItem
-                  setClosestItem newSnappedItem
+              if classifyClosest && scope.closestItem != newSnappedItem
+                setClosestItem newSnappedItem
 
-                if notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger
+              if notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger
 
-                  if xCont != snapTargetX
-                    xCont += (snapTargetX-xCont)*spring
-                    xCont = snapTargetX if Math.abs(snapTargetX-xCont)<1
-                    xchanged = true
-                    v = 0
-                  else
-                    if newSnappedItemId != snappedItemId
-                      setSnappedItem newSnappedItem
-                      scope.$apply() if snappedItemId_isBound
+                if xCont != snapTargetX
+                  xCont += (snapTargetX-xCont)*spring
+                  xCont = snapTargetX if Math.abs(snapTargetX-xCont)<1
+                  xchanged = true
+                  v = 0
+                else
+                  if newSnappedItemId != snappedItemId
+                    setSnappedItem newSnappedItem
+                    scope.$apply() if snappedItemId_isBound
 
-              if v
-                v *= f
-                xCont -= v
-                v = 0 if Math.abs(v) < 0.001
-                xchanged = true
+            if v
+              v *= f
+              xCont -= v
+              v = 0 if Math.abs(v) < 0.001
+              xchanged = true
 
-              if xchanged
-                doTransform()
-                rearrange()
+            if xchanged
+              doTransform()
+              rearrange()
 
-          ), 20
+          animationFrame.request(onFrame)
+
+        run = -> animationFrame.request(onFrame)
 
 
         # endless loop rearrange
