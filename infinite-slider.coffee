@@ -415,4 +415,4 @@
           running = false
 
     ] # /infiniteSlider
-)()
+)() 
