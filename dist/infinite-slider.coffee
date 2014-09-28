@@ -128,6 +128,7 @@
         snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
         closestItemId_isBound = scope.hasOwnProperty('closestItemId')
         notWheeling = true
+        running = false
 
         has3d = browserHelper.has3d()
 
@@ -246,9 +247,11 @@
               doTransform()
               rearrange()
 
-          animationFrame.request(onFrame)
+          animationFrame.request(onFrame) if running
 
-        run = -> animationFrame.request(onFrame)
+        run = ->
+          running = true
+          animationFrame.request(onFrame)
 
 
         # endless loop rearrange
@@ -402,5 +405,14 @@
 
         run()
         winElm.on 'resize', onWinResize
+
+        scope.$on '$destroy', ->
+          winElm.off 'resize'
+          $document.unbind endTypes
+          boundaryElm.unbind startTypes
+          $document.unbind moveTypes
+          boundaryElm.unbind 'click'
+          running = false
+
     ] # /infiniteSlider
 )()

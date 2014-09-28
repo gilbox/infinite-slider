@@ -117,7 +117,7 @@
             }
           ],
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onFrame, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onFrame, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             animationFrame = new AnimationFrame();
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
@@ -154,6 +154,7 @@
             snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
             closestItemId_isBound = scope.hasOwnProperty('closestItemId');
             notWheeling = true;
+            running = false;
             has3d = browserHelper.has3d();
             snapTargetX = 0;
             toIds = {};
@@ -290,9 +291,12 @@
                   rearrange();
                 }
               }
-              return animationFrame.request(onFrame);
+              if (running) {
+                return animationFrame.request(onFrame);
+              }
             };
             run = function() {
+              running = true;
               return animationFrame.request(onFrame);
             };
             rearrange = function() {
@@ -461,7 +465,15 @@
               }
             });
             run();
-            return winElm.on('resize', onWinResize);
+            winElm.on('resize', onWinResize);
+            return scope.$on('$destroy', function() {
+              winElm.off('resize');
+              $document.unbind(endTypes);
+              boundaryElm.unbind(startTypes);
+              $document.unbind(moveTypes);
+              boundaryElm.unbind('click');
+              return running = false;
+            });
           }
         };
       }
