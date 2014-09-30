@@ -351,14 +351,15 @@
 
 
         scope.wheelFn = (event, delta, deltaX, deltaY) ->
-          # note: because of this refact, when snapping behavior is turned off the wheel doesn't work
+          # note: because of the refactor described below, when snapping behavior is turned off the wheel doesn't work
           #
-          # To overcome the eratic behavior of inertial scolling on OS X we ignore wheel
-          # events when:
-          #   the previous deltaX was greater than the current delta X
-          #   when the last wheel event was also less than 100ms ago
-          #     OR
-          #   when absolute deltaX < absolute deltaY
+          # - Wheeling modifies the snappedItemId instead of effecting velocity
+          # - To overcome the erratic behavior of inertial scrolling on OS X we ignore wheel
+          #   events when:
+          #     the previous deltaX was greater than the current delta X
+          #     when the last wheel event was also less than 100ms ago
+          #       OR
+          #     when absolute deltaX < absolute deltaY
 
           absDeltaX = Math.abs(deltaX)
           absDeltaY = Math.abs(deltaY)
