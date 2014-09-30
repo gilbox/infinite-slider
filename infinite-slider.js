@@ -119,7 +119,7 @@
           }
         ],
         link: function(scope, element, attrs, boundaryCtrl) {
-          var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, lastWheelAbsDeltaX, lastWheelTime, moveTypes, moveTypesArray, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+          var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, lastWheelTime, moveTypes, moveTypesArray, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
           animationFrame = new AnimationFrame();
           a = attrs.acceleration || 1.05;
           f = attrs.friction || 0.95;
@@ -154,7 +154,6 @@
           snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
           closestItemId_isBound = scope.hasOwnProperty('closestItemId');
           lastWheelTime = new Date();
-          lastWheelAbsDeltaX = 0;
           running = false;
           has3d = browserHelper.has3d();
           snapTargetX = 0;
@@ -404,11 +403,9 @@
             }
           };
           scope.wheelFn = function(event, delta, deltaX, deltaY) {
-            var absDeltaX, absDeltaY, newTime;
-            absDeltaX = Math.abs(deltaX);
-            absDeltaY = Math.abs(deltaY);
+            var newTime;
             newTime = (new Date()).getTime();
-            if (deltaX && !jumping && absDeltaX > absDeltaY && ((absDeltaX > lastWheelAbsDeltaX) || (newTime - lastWheelTime > 100))) {
+            if (deltaX && !jumping && Math.abs(deltaX) > Math.abs(deltaY) && (newTime - lastWheelTime > 50)) {
               event.preventDefault();
               if (deltaX > 0) {
                 scope.closestItemId = scope.snappedItemId = __modulo(scope.snappedItemId + 1, items.length);
@@ -417,7 +414,6 @@
               }
             }
             lastWheelTime = newTime;
-            lastWheelAbsDeltaX = absDeltaX;
             return true;
           };
           if (boundaryCtrl && snap) {

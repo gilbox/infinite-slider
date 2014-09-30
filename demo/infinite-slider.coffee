@@ -124,7 +124,6 @@ angular.module('gilbox.infiniteSlider', deps)
       snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
       closestItemId_isBound = scope.hasOwnProperty('closestItemId')
       lastWheelTime = new Date()
-      lastWheelAbsDeltaX = 0
       running = false
 
       has3d = browserHelper.has3d()
@@ -356,14 +355,10 @@ angular.module('gilbox.infiniteSlider', deps)
         #   events when:
         #     the previous deltaX was greater than the current delta X
         #     when the last wheel event was also less than 100ms ago
-        #       OR
-        #     when absolute deltaX < absolute deltaY
 
-        absDeltaX = Math.abs(deltaX)
-        absDeltaY = Math.abs(deltaY)
         newTime = (new Date()).getTime()
 
-        if deltaX and !jumping and absDeltaX > absDeltaY and ((absDeltaX > lastWheelAbsDeltaX) or (newTime - lastWheelTime > 100))
+        if deltaX and !jumping and Math.abs(deltaX) > Math.abs(deltaY) and (newTime - lastWheelTime > 50)
           event.preventDefault()
 
           if deltaX > 0
@@ -372,7 +367,6 @@ angular.module('gilbox.infiniteSlider', deps)
             scope.closestItemId = scope.snappedItemId = (scope.snappedItemId-1) %% items.length
 
         lastWheelTime = newTime
-        lastWheelAbsDeltaX = absDeltaX
         return true
 
 
