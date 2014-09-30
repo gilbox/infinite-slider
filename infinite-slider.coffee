@@ -96,16 +96,14 @@
         f = attrs.friction || 0.95            # 0 < "friction" < 1
         spring = attrs.springBack || 0.3      # spring-back 0..1 1=fastest
         clickFudge = attrs.clickFudge || 2    # pixels of movement that still allow click
-        maxv = attrs.maxVelocity || 50        # maximum scrollwheel velocity
         snap = attrs.hasOwnProperty('snap') && attrs.snap != 'false'
-        snapVelocityTrigger = attrs.snapVelocityTrigger || 3  # todo anything above 3 doesn't work well w/mouse wheel
+        snapVelocityTrigger = attrs.snapVelocityTrigger || 5
         classifyClosest = attrs.hasOwnProperty('classifyClosest') && attrs.classifyClosest != 'false'
         classifySnapped = attrs.hasOwnProperty('classifySnapped') && attrs.classifySnapped != 'false'
 
         elmScope = element.scope()
         v = 0           # "velocity"
         xCont = 0
-        naxv = -maxv
         winElm = angular.element($window)
         boundaryElm = scope.boundaryElm || (boundaryCtrl && boundaryCtrl.elm) || element;
         contElm = scope.contElm || element.children().eq(0)
@@ -127,7 +125,8 @@
         snappedItemId = scope.snappedItemId # we'll keep track of snapped item id even if an attribute isn't present
         snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
         closestItemId_isBound = scope.hasOwnProperty('closestItemId')
-        notWheeling = true
+        lastWheelTime = new Date()
+        lastWheelAbsDeltaX = 0
         running = false
 
         has3d = browserHelper.has3d()
@@ -225,7 +224,7 @@
               if classifyClosest && scope.closestItem != newSnappedItem
                 setClosestItem newSnappedItem
 
-              if notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger
+              if allowClick && Math.abs(v) < snapVelocityTrigger
 
                 if xCont != snapTargetX
                   xCont += (snapTargetX-xCont)*spring
@@ -350,23 +349,35 @@
             else
               rearrange()
 
-        scope.wheelFn = (event, delta, deltaX, deltaY) ->
-          if deltaX
-            event.preventDefault()
-            if deltaX > 0
-              v = 1  if v < 1
-              v = Math.min(maxv, (v + 2) * a)
-              notWheeling = false
-              element.addClass('wheeling')
-              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
-            else
-              v = -1  if v > -1
-              v = Math.max(naxv, (v - 2) * a)
-              notWheeling = false
-              element.addClass('wheeling')
-              setTimeoutWithId (-> notWheeling = true; element.removeClass('wheeling')), 200, 0
 
-        if boundaryCtrl then boundaryCtrl.setWheelFn(scope.wheelFn)
+        scope.wheelFn = (event, delta, deltaX, deltaY) ->
+          # note: because of this refact, when snapping behavior is turned off the wheel doesn't work
+          #
+          # To overcome the eratic behavior of inertial scolling on OS X we ignore wheel
+          # events when:
+          #   the previous deltaX was greater than the current delta X
+          #   when the last wheel event was also less than 100ms ago
+          #     OR
+          #   when absolute deltaX < absolute deltaY
+
+          absDeltaX = Math.abs(deltaX)
+          absDeltaY = Math.abs(deltaY)
+          newTime = (new Date()).getTime()
+
+          if deltaX and !jumping and absDeltaX > absDeltaY and ((absDeltaX > lastWheelAbsDeltaX) or (newTime - lastWheelTime > 100))
+            event.preventDefault()
+
+            if deltaX > 0
+              scope.closestItemId = scope.snappedItemId = (scope.snappedItemId+1) %% items.length
+            else
+              scope.closestItemId = scope.snappedItemId = (scope.snappedItemId-1) %% items.length
+
+          lastWheelTime = newTime
+          lastWheelAbsDeltaX = absDeltaX
+          return true
+
+
+        if boundaryCtrl and snap then boundaryCtrl.setWheelFn(scope.wheelFn)
 
 
         readItems = ->
@@ -385,8 +396,7 @@
             onWinResize()
 
 
-        scope.$watch 'snappedItemId', (newId) ->
-          newId = parseInt(newId)
+        onSnappedItemIdChange = (newId) ->
           # the third condition determines if the id was changed internally,
           # because if it was then we don't need to do this stuff
           if items and 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
@@ -395,12 +405,16 @@
             vId = if newId<snappedItemId then items.length+newId else newId-items.length
             targetId = if Math.abs(vId-snappedItemId) < Math.abs(newId-snappedItemId) then vId else newId
             deltaId = targetId - snappedItemId
-  
+
             setSnappedItem items[newId].elm
             xCont = snapTargetX - itemWidth * deltaId
             calcContentWidth()
             rearrange()
             doTransform(true)
+
+
+        scope.$watch 'snappedItemId', (newId) ->
+          onSnappedItemIdChange(parseInt(newId))
 
 
         run()
@@ -415,4 +429,4 @@
           running = false
 
     ] # /infiniteSlider
-)() 
+)()

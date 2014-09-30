@@ -117,21 +117,19 @@
             }
           ],
           link: function(scope, element, attrs, boundaryCtrl) {
-            var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, maxv, moveTypes, moveTypesArray, naxv, notWheeling, onFrame, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+            var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, lastWheelAbsDeltaX, lastWheelTime, moveTypes, moveTypesArray, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
             animationFrame = new AnimationFrame();
             a = attrs.acceleration || 1.05;
             f = attrs.friction || 0.95;
             spring = attrs.springBack || 0.3;
             clickFudge = attrs.clickFudge || 2;
-            maxv = attrs.maxVelocity || 50;
             snap = attrs.hasOwnProperty('snap') && attrs.snap !== 'false';
-            snapVelocityTrigger = attrs.snapVelocityTrigger || 3;
+            snapVelocityTrigger = attrs.snapVelocityTrigger || 5;
             classifyClosest = attrs.hasOwnProperty('classifyClosest') && attrs.classifyClosest !== 'false';
             classifySnapped = attrs.hasOwnProperty('classifySnapped') && attrs.classifySnapped !== 'false';
             elmScope = element.scope();
             v = 0;
             xCont = 0;
-            naxv = -maxv;
             winElm = angular.element($window);
             boundaryElm = scope.boundaryElm || (boundaryCtrl && boundaryCtrl.elm) || element;
             contElm = scope.contElm || element.children().eq(0);
@@ -153,7 +151,8 @@
             snappedItemId = scope.snappedItemId;
             snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
             closestItemId_isBound = scope.hasOwnProperty('closestItemId');
-            notWheeling = true;
+            lastWheelTime = new Date();
+            lastWheelAbsDeltaX = 0;
             running = false;
             has3d = browserHelper.has3d();
             snapTargetX = 0;
@@ -260,7 +259,7 @@
                   if (classifyClosest && scope.closestItem !== newSnappedItem) {
                     setClosestItem(newSnappedItem);
                   }
-                  if (notWheeling && allowClick && Math.abs(v) < snapVelocityTrigger) {
+                  if (allowClick && Math.abs(v) < snapVelocityTrigger) {
                     if (xCont !== snapTargetX) {
                       xCont += (snapTargetX - xCont) * spring;
                       if (Math.abs(snapTargetX - xCont) < 1) {
@@ -403,34 +402,23 @@
               }
             };
             scope.wheelFn = function(event, delta, deltaX, deltaY) {
-              if (deltaX) {
+              var absDeltaX, absDeltaY, newTime;
+              absDeltaX = Math.abs(deltaX);
+              absDeltaY = Math.abs(deltaY);
+              newTime = (new Date()).getTime();
+              if (deltaX && !jumping && absDeltaX > absDeltaY && ((absDeltaX > lastWheelAbsDeltaX) || (newTime - lastWheelTime > 100))) {
                 event.preventDefault();
                 if (deltaX > 0) {
-                  if (v < 1) {
-                    v = 1;
-                  }
-                  v = Math.min(maxv, (v + 2) * a);
-                  notWheeling = false;
-                  element.addClass('wheeling');
-                  return setTimeoutWithId((function() {
-                    notWheeling = true;
-                    return element.removeClass('wheeling');
-                  }), 200, 0);
+                  scope.closestItemId = scope.snappedItemId = __modulo(scope.snappedItemId + 1, items.length);
                 } else {
-                  if (v > -1) {
-                    v = -1;
-                  }
-                  v = Math.max(naxv, (v - 2) * a);
-                  notWheeling = false;
-                  element.addClass('wheeling');
-                  return setTimeoutWithId((function() {
-                    notWheeling = true;
-                    return element.removeClass('wheeling');
-                  }), 200, 0);
+                  scope.closestItemId = scope.snappedItemId = __modulo(scope.snappedItemId - 1, items.length);
                 }
               }
+              lastWheelTime = newTime;
+              lastWheelAbsDeltaX = absDeltaX;
+              return true;
             };
-            if (boundaryCtrl) {
+            if (boundaryCtrl && snap) {
               boundaryCtrl.setWheelFn(scope.wheelFn);
             }
             readItems = function() {
@@ -450,9 +438,8 @@
                 return onWinResize();
               });
             }
-            scope.$watch('snappedItemId', function(newId) {
+            onSnappedItemIdChange = function(newId) {
               var deltaId, targetId, vId;
-              newId = parseInt(newId);
               if (items && (0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
                 vId = newId < snappedItemId ? items.length + newId : newId - items.length;
                 targetId = Math.abs(vId - snappedItemId) < Math.abs(newId - snappedItemId) ? vId : newId;
@@ -463,6 +450,9 @@
                 rearrange();
                 return doTransform(true);
               }
+            };
+            scope.$watch('snappedItemId', function(newId) {
+              return onSnappedItemIdChange(parseInt(newId));
             });
             run();
             winElm.on('resize', onWinResize);
