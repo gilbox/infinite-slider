@@ -119,7 +119,7 @@
           }
         ],
         link: function(scope, element, attrs, boundaryCtrl) {
-          var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, closestItemId_isBound, contElm, doTransform, elmScope, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, lastWheelTime, moveTypes, moveTypesArray, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+          var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, clickHandler, closestItemId_isBound, contElm, doTransform, elementStartX, elmScope, endHandler, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, lastWheelTime, moveHandler, moveTypes, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startHandler, startTypes, toIds, v, winElm, xCont, xMax, xMin;
           animationFrame = new AnimationFrame();
           a = attrs.acceleration || 1.05;
           f = attrs.friction || 0.95;
@@ -139,8 +139,8 @@
           endTypes = 'touchend touchcancel mouseup mouseleave';
           moveTypes = 'touchmove mousemove';
           startTypes = 'touchstart mousedown';
-          moveTypesArray = moveTypes.split(' ');
           allowClick = true;
+          elementStartX = 0;
           interactionStart = null;
           interactionCurrent = null;
           prevInteraction = null;
@@ -167,8 +167,8 @@
             return element.toggleClass('allow-click', !v);
           };
           setAllowClick(true);
-          $document.bind(endTypes, function(event) {
-            var el, type, _i, _len, _results;
+          endHandler = function(event) {
+            var el;
             if (!allowClick) {
               event.preventDefault();
               if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
@@ -185,46 +185,44 @@
               }
             }
             interactionStart = null;
-            _results = [];
-            for (_i = 0, _len = moveTypesArray.length; _i < _len; _i++) {
-              type = moveTypesArray[_i];
-              _results.push($document.unbind(type));
+            return $document.off(moveTypes, moveHandler);
+          };
+          $document.on(endTypes, endHandler);
+          moveHandler = function(event) {
+            var dx, dy;
+            event.preventDefault();
+            if (interactionCurrent) {
+              prevInteraction = interactionCurrent;
             }
-            return _results;
-          });
-          boundaryElm.bind(startTypes, function(event) {
-            var elementStartX;
+            interactionCurrent = browserHelper.getTouchPoint(event);
+            if (prevInteraction) {
+              dy = prevInteraction.y - interactionCurrent.y;
+              dx = prevInteraction.x - interactionCurrent.x;
+              if (Math.abs(dy) > Math.abs(dx)) {
+                $window.scrollBy(0, dy);
+                prevInteraction.y += dy;
+                interactionCurrent.y += dy;
+              }
+            }
+            xCont = elementStartX + (interactionCurrent.x - interactionStart.x);
+            return doTransform();
+          };
+          startHandler = function(event) {
             event.preventDefault();
             setAllowClick(false);
             v = 0;
             elementStartX = xCont;
             interactionStart = interactionCurrent = browserHelper.getTouchPoint(event);
-            return $document.bind(moveTypes, function(event) {
-              var dx, dy;
-              event.preventDefault();
-              if (interactionCurrent) {
-                prevInteraction = interactionCurrent;
-              }
-              interactionCurrent = browserHelper.getTouchPoint(event);
-              if (prevInteraction) {
-                dy = prevInteraction.y - interactionCurrent.y;
-                dx = prevInteraction.x - interactionCurrent.x;
-                if (Math.abs(dy) > Math.abs(dx)) {
-                  $window.scrollBy(0, dy);
-                  prevInteraction.y += dy;
-                  interactionCurrent.y += dy;
-                }
-              }
-              xCont = elementStartX + (interactionCurrent.x - interactionStart.x);
-              return doTransform();
-            });
-          });
-          boundaryElm.bind('click', function(event) {
+            return $document.on(moveTypes, moveHandler);
+          };
+          boundaryElm.on(startTypes, startHandler);
+          clickHandler = function(event) {
             if (!allowClick) {
               event.preventDefault();
             }
             return allowClick;
-          });
+          };
+          boundaryElm.on('click', clickHandler);
           setSnappedItem = function(newSnappedItem) {
             if (scope.snappedItemElm && classifySnapped) {
               scope.snappedItemElm.removeClass('snapped');
@@ -455,11 +453,11 @@
           run();
           winElm.on('resize', onWinResize);
           return scope.$on('$destroy', function() {
-            winElm.off('resize');
-            $document.unbind(endTypes);
-            boundaryElm.unbind(startTypes);
-            $document.unbind(moveTypes);
-            boundaryElm.unbind('click');
+            winElm.off('resize', onWinResize);
+            $document.off(endTypes, endHandler);
+            boundaryElm.off(startTypes, startHandler);
+            $document.off(moveTypes, moveHandler);
+            boundaryElm.off('click', clickHandler);
             return running = false;
           });
         }
