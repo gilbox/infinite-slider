@@ -258,18 +258,22 @@ angular.module('gilbox.infiniteSlider', deps)
 
     # endless loop rearrange
     rearrange = ->
-      return if !items
-      if lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51
-        lastItem.x = firstItem.x - lastItem.clientWidth
-        positionItem lastItem
-        [firstItem, lastItem] = [lastItem, lastItem.prevItem]
-        rearrange()
+      if items
+        rearr = (prevItem)->
+          if firstItem.x + xCont < xMin - firstItem.clientWidth * 0.51
+            prev = firstItem
+            firstItem.x = lastItem.x + firstItem.clientWidth
+            positionItem firstItem
+            [firstItem, lastItem] = [firstItem.nextItem, firstItem]
+            rearrange(prev) if prevItem != firstItem
 
-      else if firstItem.x + xCont < xMin - firstItem.clientWidth * 0.51
-        firstItem.x = lastItem.x + firstItem.clientWidth
-        positionItem firstItem
-        [firstItem, lastItem] = [firstItem.nextItem, firstItem]
-        rearrange()
+          else if lastItem.x + xCont > xMax #+ lastItem.clientWidth * 0.51
+            prev = lastItem
+            lastItem.x = firstItem.x - lastItem.clientWidth
+            positionItem lastItem
+            [firstItem, lastItem] = [lastItem, lastItem.prevItem]
+            rearrange(prev)
+        rearr()
 
 
     positionItem = (item) ->
@@ -328,8 +332,14 @@ angular.module('gilbox.infiniteSlider', deps)
         contentWidth += item.clientWidth
 
       boundsOffsetX = element[0].clientWidth/2 - itemWidth/2
-      xMax = contentWidth/2 + boundsOffsetX
-      xMin = boundsOffsetX - contentWidth/2
+
+      if attrs.infiniteSliderAlign == 'left'
+        xMax = contentWidth - boundsOffsetX
+        xMin = boundsOffsetX
+      else
+        xMax = contentWidth/2 + boundsOffsetX
+        xMin = boundsOffsetX - contentWidth/2
+
       true
 
 

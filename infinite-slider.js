@@ -298,20 +298,27 @@
             return animationFrame.request(onFrame);
           };
           rearrange = function() {
-            var _ref, _ref1;
-            if (!items) {
-              return;
-            }
-            if (lastItem.x + xCont > xMax + lastItem.clientWidth * 0.51) {
-              lastItem.x = firstItem.x - lastItem.clientWidth;
-              positionItem(lastItem);
-              _ref = [lastItem, lastItem.prevItem], firstItem = _ref[0], lastItem = _ref[1];
-              return rearrange();
-            } else if (firstItem.x + xCont < xMin - firstItem.clientWidth * 0.51) {
-              firstItem.x = lastItem.x + firstItem.clientWidth;
-              positionItem(firstItem);
-              _ref1 = [firstItem.nextItem, firstItem], firstItem = _ref1[0], lastItem = _ref1[1];
-              return rearrange();
+            var rearr;
+            if (items) {
+              rearr = function(prevItem) {
+                var prev, _ref, _ref1;
+                if (firstItem.x + xCont < xMin - firstItem.clientWidth * 0.51) {
+                  prev = firstItem;
+                  firstItem.x = lastItem.x + firstItem.clientWidth;
+                  positionItem(firstItem);
+                  _ref = [firstItem.nextItem, firstItem], firstItem = _ref[0], lastItem = _ref[1];
+                  if (prevItem !== firstItem) {
+                    return rearrange(prev);
+                  }
+                } else if (lastItem.x + xCont > xMax) {
+                  prev = lastItem;
+                  lastItem.x = firstItem.x - lastItem.clientWidth;
+                  positionItem(lastItem);
+                  _ref1 = [lastItem, lastItem.prevItem], firstItem = _ref1[0], lastItem = _ref1[1];
+                  return rearrange(prev);
+                }
+              };
+              return rearr();
             }
           };
           positionItem = function(item) {
@@ -377,8 +384,13 @@
               contentWidth += item.clientWidth;
             }
             boundsOffsetX = element[0].clientWidth / 2 - itemWidth / 2;
-            xMax = contentWidth / 2 + boundsOffsetX;
-            xMin = boundsOffsetX - contentWidth / 2;
+            if (attrs.infiniteSliderAlign === 'left') {
+              xMax = contentWidth - boundsOffsetX;
+              xMin = boundsOffsetX;
+            } else {
+              xMax = contentWidth / 2 + boundsOffsetX;
+              xMin = boundsOffsetX - contentWidth / 2;
+            }
             return true;
           };
           onWinResize = function() {

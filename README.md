@@ -67,6 +67,13 @@ Some minimal styling is required:
 }
 ````
 
+# Options
+
+## infinite-slider-align="left"
+
+Use this attribute alongside the `infinite-slider` attribute to left-align the slides. 
+See the included demo, `left-align.html`.
+
 # Demo
 
 Check out [the demo](http://gilbox.github.io/infinite-slider/)
