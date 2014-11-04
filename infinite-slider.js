@@ -187,7 +187,6 @@
             interactionStart = null;
             return $document.off(moveTypes, moveHandler);
           };
-          $document.on(endTypes, endHandler);
           moveHandler = function(event) {
             var dx, dy;
             event.preventDefault();
@@ -215,14 +214,23 @@
             interactionStart = interactionCurrent = browserHelper.getTouchPoint(event);
             return $document.on(moveTypes, moveHandler);
           };
-          boundaryElm.on(startTypes, startHandler);
           clickHandler = function(event) {
             if (!allowClick) {
               event.preventDefault();
             }
             return allowClick;
           };
-          boundaryElm.on('click', clickHandler);
+          attrs.$observe('disableDrag', function(next) {
+            if (next !== 'true') {
+              $document.on(endTypes, endHandler);
+              boundaryElm.on(startTypes, startHandler);
+              return boundaryElm.on('click', clickHandler);
+            } else {
+              $document.off(endTypes, endHandler);
+              boundaryElm.off(startTypes, startHandler);
+              return boundaryElm.off('click', clickHandler);
+            }
+          });
           setSnappedItem = function(newSnappedItem) {
             if (scope.snappedItemElm && classifySnapped) {
               scope.snappedItemElm.removeClass('snapped');
