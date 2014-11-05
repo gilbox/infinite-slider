@@ -159,9 +159,6 @@ angular.module('gilbox.infiniteSlider', deps)
       interactionStart = null
       $document.off moveTypes, moveHandler
 
-    $document.on endTypes, endHandler
-
-
     moveHandler = (event) ->  # drag move
       event.preventDefault()
       prevInteraction = interactionCurrent if interactionCurrent
@@ -187,14 +184,20 @@ angular.module('gilbox.infiniteSlider', deps)
 
       $document.on moveTypes, moveHandler
 
-    boundaryElm.on startTypes, startHandler
-
     clickHandler = (event) ->
       event.preventDefault() if (!allowClick)
       allowClick
-
-    boundaryElm.on 'click', clickHandler
-
+    
+    attrs.$observe 'disableDrag',
+      (next) -> 
+        if next != 'true'
+          $document.on endTypes, endHandler
+          boundaryElm.on startTypes, startHandler
+          boundaryElm.on 'click', clickHandler
+        else
+          $document.off endTypes, endHandler
+          boundaryElm.off startTypes, startHandler
+          boundaryElm.off 'click', clickHandler
 
     setSnappedItem = (newSnappedItem) ->
       scope.snappedItemElm.removeClass 'snapped' if scope.snappedItemElm and classifySnapped
