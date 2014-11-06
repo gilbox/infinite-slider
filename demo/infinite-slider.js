@@ -447,11 +447,12 @@
             });
           }
           onSnappedItemIdChange = function(newId) {
-            var deltaId, targetId, vId;
+            var actualSnappedItemId, deltaId, targetId, vId;
             if (items && (0 <= newId && newId < items.length) && scope.snappedItemId !== scope.snappedItemElm.idx) {
-              vId = newId < snappedItemId ? items.length + newId : newId - items.length;
-              targetId = Math.abs(vId - snappedItemId) < Math.abs(newId - snappedItemId) ? vId : newId;
-              deltaId = targetId - snappedItemId;
+              actualSnappedItemId = __modulo(firstItem.idx + Math.abs(firstItem.x + snapTargetX) / itemWidth, items.length);
+              vId = newId < actualSnappedItemId ? items.length + newId : newId - items.length;
+              targetId = Math.abs(vId - actualSnappedItemId) < Math.abs(newId - actualSnappedItemId) ? vId : newId;
+              deltaId = targetId - actualSnappedItemId;
               setSnappedItem(items[newId].elm);
               xCont = snapTargetX - itemWidth * deltaId;
               calcContentWidth();

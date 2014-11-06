@@ -411,9 +411,10 @@ angular.module('gilbox.infiniteSlider', deps)
       if items and 0 <= newId < items.length and scope.snappedItemId != scope.snappedItemElm.idx
         # calculate the shortest distance to the newId item because otherwise it breaks the endless effect
         # @todo: there might be a simpler way to do this
-        vId = if newId<snappedItemId then items.length+newId else newId-items.length
-        targetId = if Math.abs(vId-snappedItemId) < Math.abs(newId-snappedItemId) then vId else newId
-        deltaId = targetId - snappedItemId
+        actualSnappedItemId = (firstItem.idx + Math.abs(firstItem.x + snapTargetX)/itemWidth) %% items.length # this is sad but necessary for the ability to quickly change snappedItemId externally
+        vId = if newId<actualSnappedItemId then items.length+newId else newId-items.length
+        targetId = if Math.abs(vId-actualSnappedItemId) < Math.abs(newId-actualSnappedItemId) then vId else newId
+        deltaId = targetId - actualSnappedItemId
 
         setSnappedItem items[newId].elm
         xCont = snapTargetX - itemWidth * deltaId

@@ -25,6 +25,7 @@
   </div>
 
   snappedItemId: <input type="text" ng-model="listData.snappedItemId"/><br/>
+  <button ng-click="listData.snappedItemId = listData.snappedItemId < listData.items.length-1 ? listData.snappedItemId+1 : 0">+</button>
   url: <a href="{{listData.items[listData.snappedItemId].link}}">{{listData.items[listData.snappedItemId].link}}</a>
 
   <blockquote>
