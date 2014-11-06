@@ -13,7 +13,7 @@
   </header>
 
   <div infinite-slider-boundary class="infinite-slider-boundary infinite-slider-window">
-    <div infinite-slider snap classify-closest classify-snapped closest-item-id="closestItemId" snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
+    <div infinite-slider snap classify-closest classify-snapped closest-item-id="closestItemId" is-jumping="listData.isJumping" snapped-item-id="listData.snappedItemId" class="infinite-slider-container">
       <div infinite-slider-content class="infinite-slider-content">
 
         <div class="slide" ng-repeat="item in listData.items track by $index">
@@ -24,7 +24,10 @@
     </div>
   </div>
 
-  snappedItemId: <input type="text" ng-model="listData.snappedItemId"/><br/>
+  snappedItemId: <input type="text" ng-model="listData.snappedItemId"/>
+  <button ng-click="plusClick()">+</button>
+
+  <br/>
   url: <a href="{{listData.items[listData.snappedItemId].link}}">{{listData.items[listData.snappedItemId].link}}</a>
 
   <blockquote>

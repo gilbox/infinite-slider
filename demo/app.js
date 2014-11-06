@@ -29,7 +29,15 @@ app.controller('appCtrl', function($scope) {
 
   $scope.listData = {
     items: imgs,
+    isJumping: false,
     snappedItemId: 3  // this works!
   };
+
+  $scope.plusClick = function () {
+    console.log("-->$scope.listData.isJumping: ", $scope.listData.isJumping);
+    if (!$scope.listData.isJumping) {
+      $scope.listData.snappedItemId = $scope.listData.snappedItemId < $scope.listData.items.length-1 ? $scope.listData.snappedItemId+1 : 0;
+    }
+  }
 
 });

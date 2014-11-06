@@ -101,7 +101,8 @@
         restrict: 'AE',
         scope: {
           snappedItemId: '=?',
-          closestItemId: '=?'
+          closestItemId: '=?',
+          isJumping: '=?'
         },
         require: '?^infiniteSliderBoundary',
         controller: [
@@ -119,7 +120,7 @@
           }
         ],
         link: function(scope, element, attrs, boundaryCtrl) {
-          var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, clickHandler, closestItemId_isBound, contElm, doTransform, elementStartX, elmScope, endHandler, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, itemWidth, items, jumping, lastItem, lastWheelTime, moveHandler, moveTypes, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startHandler, startTypes, toIds, v, winElm, xCont, xMax, xMin;
+          var a, allowClick, animationFrame, boundaryElm, calcContentWidth, classifyClosest, classifySnapped, clickFudge, clickHandler, closestItemId_isBound, contElm, doTransform, elementStartX, elmScope, endHandler, endTypes, f, firstItem, has3d, interactionCurrent, interactionStart, isJumping_isBound, itemWidth, items, jumping, lastItem, lastWheelTime, moveHandler, moveTypes, onFrame, onSnappedItemIdChange, onWinResize, positionItem, prevInteraction, readItems, rearrange, run, running, setAllowClick, setClosestItem, setSnappedItem, setTimeoutWithId, snap, snapTargetX, snapVelocityTrigger, snappedItemId, snappedItemId_isBound, spring, startHandler, startTypes, toIds, v, winElm, xCont, xMax, xMin;
           animationFrame = new AnimationFrame();
           a = attrs.acceleration || 1.05;
           f = attrs.friction || 0.95;
@@ -153,6 +154,10 @@
           snappedItemId = scope.snappedItemId;
           snappedItemId_isBound = scope.hasOwnProperty('snappedItemId');
           closestItemId_isBound = scope.hasOwnProperty('closestItemId');
+          isJumping_isBound = scope.hasOwnProperty('isJumping');
+          if (isJumping_isBound) {
+            scope.isJumping = false;
+          }
           lastWheelTime = new Date();
           running = false;
           has3d = browserHelper.has3d();
@@ -340,12 +345,18 @@
                   'transition': 'transform .5s'
                 });
                 jumping = true;
+                if (isJumping_isBound) {
+                  scope.isJumping = true;
+                }
                 setTimeoutWithId(function() {
                   contElm.css({
                     '-webkit-transition': 'none',
                     'transition': 'none'
                   });
-                  return jumping = false;
+                  jumping = false;
+                  if (isJumping_isBound) {
+                    return scope.isJumping = false;
+                  }
                 }, 500, 1);
               }
               return contElm.css({

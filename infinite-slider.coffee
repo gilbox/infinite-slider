@@ -79,7 +79,8 @@ angular.module('gilbox.infiniteSlider', deps)
   restrict: 'AE'
   scope: {
     snappedItemId: '=?',
-    closestItemId: '=?'
+    closestItemId: '=?',
+    isJumping: '=?'
   }
   require: '?^infiniteSliderBoundary'
   controller: [ '$scope', ($scope) ->
@@ -123,6 +124,8 @@ angular.module('gilbox.infiniteSlider', deps)
     snappedItemId = scope.snappedItemId # we'll keep track of snapped item id even if an attribute isn't present
     snappedItemId_isBound = scope.hasOwnProperty('snappedItemId')
     closestItemId_isBound = scope.hasOwnProperty('closestItemId')
+    isJumping_isBound = scope.hasOwnProperty('isJumping')
+    scope.isJumping = false if isJumping_isBound
     lastWheelTime = new Date()
     running = false
 
@@ -292,12 +295,14 @@ angular.module('gilbox.infiniteSlider', deps)
             '-webkit-transition': '-webkit-transform .5s'
             'transition': 'transform .5s'
           jumping = true
+          scope.isJumping = true if isJumping_isBound
 
           setTimeoutWithId ->
             contElm.css
               '-webkit-transition': 'none'
               'transition': 'none'
             jumping = false
+            scope.isJumping = false if isJumping_isBound
           , 500, 1
 
         contElm.css
