@@ -163,23 +163,23 @@ angular.module('gilbox.infiniteSlider', deps)
       $document.off moveTypes, moveHandler
 
     moveHandler = (event) ->  # drag move
-      event.preventDefault()
       prevInteraction = interactionCurrent if interactionCurrent
       interactionCurrent = browserHelper.getTouchPoint event
 
       if prevInteraction # viewport scrolling (up/down)
         dy = prevInteraction.y - interactionCurrent.y
         dx = prevInteraction.x - interactionCurrent.x
-        if (Math.abs(dy) > Math.abs(dx))
-          $window.scrollBy(0, dy)
-          prevInteraction.y += dy
-          interactionCurrent.y += dy
+        if  (Math.abs(dy) > Math.abs(dx))
+          return
+        else
+          event.preventDefault()
+      else
+        event.preventDefault()
 
       xCont = elementStartX + (interactionCurrent.x - interactionStart.x)
       doTransform()
 
     startHandler = (event) ->  # drag start
-      event.preventDefault()
       setAllowClick false
       v = 0
       elementStartX = xCont
