@@ -76,7 +76,7 @@ See the included demo, `left-align.html`.
 
 # Demo
 
-Check out [the demo](http://gilbox.github.io/infinite-slider/)
+Check out [the demo](http://gilbox.github.io/infinite-slider/demo)
 
 # License
 
