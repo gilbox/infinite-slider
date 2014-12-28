@@ -5,6 +5,15 @@ If you'd like to contribute to this project, PRs are appreciated.
 If you have any bugs, reports are welcomed.
 
 
+In the Wild
+===========
+
+infinite-slider is being used in the following websites. ([add your website to this list](https://github.com/gilbox/infinite-slider/edit/master/README.md))
+
+- [American Express Travel Mobile Site](http://m.amextravel.com/)
+- [iSeatz](http://iseatz.com/)
+- [Hookah Club](http://hookah-club.com)
+
 #How do I add this to my project?
 
 You can download infinite-slider by:
