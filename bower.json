@@ -10,8 +10,7 @@
   "dependencies": {
     "angular": "*",
     "angular-mousewheel": "~1.0.4",
-    "animation-frame": "~0.1.7",
-    "hamster": "~0.3.0"
+    "animation-frame": "~0.1.7"
   },
   "ignore": [
     "node_modules",
