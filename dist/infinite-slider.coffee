@@ -431,6 +431,7 @@ angular.module('gilbox.infiniteSlider', deps)
 
 
     scope.$watch 'snappedItemId', (newId) ->
+      onWinResize()
       onSnappedItemIdChange(parseInt(newId))
 
 

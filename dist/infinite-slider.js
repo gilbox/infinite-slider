@@ -479,6 +479,7 @@
             }
           };
           scope.$watch('snappedItemId', function(newId) {
+            onWinResize();
             return onSnappedItemIdChange(parseInt(newId));
           });
           run();
