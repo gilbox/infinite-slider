@@ -208,6 +208,18 @@
                 interactionCurrent.y += dy;
               }
             }
+            // had to add this to avoid getting undefined at line 211 when clicking google maps
+            // this seems like a hack, if you know of a better solution please delete this.
+            // *** start of added code
+               if (!interactionStart && !interactionCurrent) {
+                  interactionStart = interactionCurrent = { x: 0};
+                 
+            } else if (!interactionStart && interactionCurrent) {
+                interactionStart = interactionCurrent;
+            } else if (interactionStart && !interactionCurrent) {
+                 interactionCurrent = interactionStart;
+            }
+            // ** end of added code
             xCont = elementStartX + (interactionCurrent.x - interactionStart.x);
             return doTransform();
           };
