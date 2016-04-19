@@ -174,6 +174,10 @@
           setAllowClick(true);
           endHandler = function(event) {
             var el;
+              if (event) {
+              event.stopPropagation();
+              event.cancelBubble = true;
+            }
             if (!allowClick) {
               event.preventDefault();
               if (interactionStart === null || (Math.abs(interactionCurrent.x - interactionStart.x) < clickFudge && Math.abs(interactionCurrent.y - interactionStart.y) < clickFudge)) {
@@ -208,9 +212,6 @@
                 interactionCurrent.y += dy;
               }
             }
-            // had to add this to avoid getting undefined at line 211 when overlaying and clicking google maps
-            // this seems like a hack, if you know of a better solution please delete this.
-            // *** start of added code - didn't think about y, added it, thanks
                if (!interactionStart && !interactionCurrent) {
                   interactionStart = interactionCurrent = { x: 0, y:0};
                  
@@ -219,7 +220,6 @@
             } else if (interactionStart && !interactionCurrent) {
                  interactionCurrent = interactionStart;
             }
-            // ** end of added code
             xCont = elementStartX + (interactionCurrent.x - interactionStart.x);
             return doTransform();
           };
